@@ -24,6 +24,7 @@ class Post(models.Model):
 	draft = models.BooleanField(default = False)
 	publish = models.DateField(auto_now=False, auto_now_add=False)
 	read_time = models.IntegerField(default = 0)
+	views = models.PositiveIntegerField(default=0)
 	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
 	timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
@@ -37,8 +38,13 @@ class Post(models.Model):
 	def __str__(self):
 		return self.title
 
-	def get_last_ten_posts(self):
-		return self.Post.objects.filter(draft=False)[:10]
+	# @property
+	# def get_last_ten_posts(self):
+	# 	return Post.objects.filter(draft=False)[:10]
+
+	# @property
+	# def get_total_post_by_user(self):
+	# 	return Post.objects.filter(user=self.request.user).count()
 
 
 

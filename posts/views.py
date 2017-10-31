@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -30,11 +31,18 @@ def posts_list(request):
 	return render(request, 'posts/post_list.html', {'posts': posts})
 
 
+
 def post_details(request, pk):
 	post = get_object_or_404(Post, pk=pk)
+	session_key = 'viewed_post_{}'.format(post.pk)
+	if not request.session.get(session_key, False):
+		post.views += 1
+		post.save()
+		request.session[session_key] = True
 	return render(request, 'posts/post_detail.html', {'post': post})
 
 
+@login_required
 def new_post(request):
 	title_text = 'New Post'
 	if request.method == 'POST':
@@ -50,6 +58,7 @@ def new_post(request):
 	return render(request, 'posts/new_post.html', {'form': form, 'title_text':title_text})
 
 
+@login_required
 def edit_post(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 	title_text = 'Edit Post'
@@ -69,3 +78,11 @@ def edit_post(request, pk):
 		form = PostForm(instance=post)
 
 	return render(request, 'posts/new_post.html', {'form': form, 'title_text': title_text})
+
+
+def delete_post(request, pk):
+	instance = get_object_or_404(Post, pk=pk)
+	instance.delete()
+	messages.success(request, 'Post: {} Deleted Succussfully!'.format(instance.title))
+	return redirect('posts:list')
+	

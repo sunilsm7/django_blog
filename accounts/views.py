@@ -17,7 +17,7 @@ def signup(request):
 		if form.is_valid():
 			user = form.save()
 			auth_login(request, user)
-			redirect('home')
+			return redirect('/')
 	else:
 		form = SignUpForm()
 	return render(request, 'registration/signup.html', {'form':form })
