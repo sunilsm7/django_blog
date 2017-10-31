@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+<div class="row">
+<div class="container col-sm-4 offset-2">
+	<h2>Log in</h2>
+	<form method="post" action="{% url 'accounts:login' %}">
+	{% csrf_token %}
+	{% include 'includes/form-snippet.html' %}
+
+	<input type="submit" value="login" class="btn btn-primary btn-block" />
+	<input type="hidden" name="next" value="{{ next }}" />
+	</form>
+
+	{# Assumes you setup the password_reset view in your URLconf #}
+	<p><a href="#">Forgot your password?</a></p>
+	<p>New to Site <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+</div>
+</div>
+{% endblock %}

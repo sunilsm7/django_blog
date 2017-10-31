@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title%} Blog List {% endblock %}
+{% block content %}
+
+<h2> Blog Posts</h2>
+
+	{% for post in posts %}
+		<div class="card">
+		  <div class="card-block">
+		    <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
+		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:{{ post.user}}. </h6>
+		    <p class="card-text">{{ post.content }}</p>
+
+		    <a href="{% url 'posts:details' post.id %}" class="card-link">Read more</a>
+		    <a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Update</a>
+		    <a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Delete</a>
+		  </div>
+		</div>
+
+	{% endfor %}
+
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

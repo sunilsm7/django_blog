@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign up{% endblock %}
+
+
+{% block content %}
+  <div class="row">
+    <div class="col-lg-6 col-md-8 col-sm-10 offset-2">
+    <h2>Register</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% include 'includes/form-snippet.html' %}
+        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+      </form>
+      <div class="container">
+        <span>Already register ? <a href="{% url 'accounts:login' %}">Login here</a></span>
+      </div>
+    </div>
+  </div>
+{% endblock %}
