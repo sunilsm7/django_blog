@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title%} Blog List {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  	<li class="breadcrumb-item active">Post List</li>
+{% endblock %}
+
 {% block content %}
 
 <h2> Blog Posts</h2>
@@ -11,7 +17,7 @@
 		<div class="card">
 		  <div class="card-block">
 		    <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
-		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:{{ post.user}}. Views: {{ post.views }} </h6>
+		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:{{ post.user}}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
 		    <p class="card-text">{{ post.content }}</p>
 
 		    <a href="{% url 'posts:details' post.id %}" class="card-link">Read more</a>
@@ -26,6 +32,6 @@
 
 	{% endfor %}
 
-{% include 'includes/pagination.html' with page_obj=posts%}
+{% include 'includes/pagination.html' %}
 
 {% endblock %}

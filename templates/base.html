@@ -15,7 +15,12 @@
   <body>
     
     {% include 'includes/nav.html' %}
+
     <div class="container">
+    <ol class="breadcrumb">
+    {% block breadcrumb %}
+    {% endblock %}
+    </ol>
     {% block content %}
 
     {% endblock %}

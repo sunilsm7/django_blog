@@ -4,4 +4,9 @@
 
 .container{
 	margin-top : 05px;
+	margin-bottom: 05px;
+}
+
+.breadcrumb{
+	margin-top : 10px;
 }

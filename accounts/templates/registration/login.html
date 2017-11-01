@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block breadcrumb %}
+  <li class="breadcrumb-item active"><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item active">Log in</li>
+{% endblock %}
+
 {% block content %}
 
 {% if form.errors %}

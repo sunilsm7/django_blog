@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title%}Post Delete Confirmation {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'posts:list' %}">Post list</a></li>
+  	<li class="breadcrumb-item active">Post Delete</li>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<h2>Delete Post</h2>
+	<form action="" method="post">{% csrf_token %}
+	    <p>Are you sure you want to delete <strong><a href="{% url 'posts:details' object.id %}">"{{ object }}"?</a></strong></p>
+	    <input type="submit" value="Confirm" class="btn btn-success" />
+	</form>
+</br>
+
+{% if object.comments %}
+	<h6>All of the following comments and their related post's items will be deleted:</h6>
+	<ul>
+		{% for comment in object.comments.all %}
+			{% if not comment.parent %}	
+				<li>{{ comment.content }}</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+{% endif %}
+
+</div>
+{% endblock %}

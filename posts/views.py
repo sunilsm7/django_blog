@@ -1,18 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import ListView, DetailView, TemplateView
 
+from django.views.generic.edit import (
+	FormView,
+	CreateView,
+	UpdateView, 
+	DeleteView
+	)
+from django.urls import reverse_lazy
+
+from .forms import CommentForm, ContactForm, PostForm
 from .models import Post
-from .forms import PostForm, CommentForm
-import datetime
+
+
 # Create your views here.
 
 def home(request):
 	posts = Post.objects.filter(draft=False)[:10]
+
 	return render(request, 'home.html', {'posts': posts,})
 
 
@@ -98,4 +111,102 @@ def delete_post(request, pk):
 	instance.delete()
 	messages.success(request, 'Post: {} Deleted Succussfully!'.format(instance.title))
 	return redirect('posts:list')
+
+
+class ContactView(FormView):
+	template_name = 'contact.html'
+	form_class = ContactForm
+	success_url = 'home'
+
+	def form_valid(self, form):
+		form.send_email()
+		return super(ContactView, self).form_valid(form)
+
+	def form_invalid(self, form):
+		return super(ContactView, self).form_invalid(form)
 	
+
+class HomeView(ListView):
+	model = Post
+	template_name = 'home.html'
+	context_object_name = 'posts'
+
+	def get_queryset(self):
+		queryset = Post.objects.filter(draft=False)[:10]
+		return queryset
+
+
+class PostListView(ListView):
+	model = Post
+	template_name = 'posts/post_list.html'
+	context_object_name = 'posts'
+	queryset = Post.objects.filter(draft=False)
+	paginate_by = 5
+
+	# def get_context_data(self, **kwargs):
+	# 	context = super(PostListView, self).get_context_data(**kwargs)
+	# 	context['posts'] = Post.objects.all().order_by('-publish')
+	# 	return context
+
+
+class PostDetailView(DetailView):
+	model = Post
+	template_name = 'posts/post_detail.html'
+	context_object_name = 'post'
+
+	# def get_queryset(self):
+	# 	pass
+
+	def get_context_data(self, **kwargs):
+		context = super(PostDetailView, self).get_context_data(**kwargs)
+		context['test_title'] = 'hello there'
+		return context
+
+
+class PostCreateView(CreateView):
+	model = Post
+	form_class = PostForm
+	template_name = 'posts/new_post.html'
+
+	def form_valid(self, form):
+		form.instance.user = self.request.user
+		form.instance.publish = datetime.datetime.now()
+		return super(PostCreateView, self).form_valid(form)
+
+
+	def form_invalid(self, form):
+		return super(PostCreateView, self).form_invalid(form)
+
+
+	def get_context_data(self, **kwargs):
+		context = super(PostCreateView, self).get_context_data(**kwargs)
+		context['title_text'] = 'New Post'
+		context['btn_text'] = 'Create Post'
+		return context 
+
+
+class PostUpdateView(UpdateView):
+	model = Post
+	form_class = PostForm
+	template_name = 'posts/new_post.html'
+	# success_url = reverse_lazy('posts:list')
+	success_message = "Post updated successfully"
+
+	def get_success_url(self):
+		self.object = self.get_object()
+		return reverse_lazy('posts:details', args=[self.object.id])
+
+	def get_context_data(self, **kwargs):
+		context = super(PostUpdateView, self).get_context_data(**kwargs)
+		context['title_text'] = 'Edit Post'
+		context['btn_text'] = 'Update Post'
+		return context
+
+	# def get_success_message(self):
+	# 	return self.success_message('Post Updated Successfully!')
+
+
+class PostDeleteView(DeleteView):
+	model = Post
+	template_name = 'posts/post_confirm_delete.html'
+	success_url = reverse_lazy('posts:list')

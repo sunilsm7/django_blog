@@ -2,14 +2,20 @@
 
 {% block title%} Blog Detail {% endblock %}
 
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  	<li class="breadcrumb-item"><a href="{% url 'posts:list' %}">Post List</a></li>
+  	<li class="breadcrumb-item active">Post Details</li>
+{% endblock %}
+
 {% block content %}
 
 <div class="container">
 	{% include 'includes/messages.html' %}
 
-	<h2>{{ post.title }} </h2>
+	<h2>{{ post.title }}</h2>
 	<h6>By: {{ post.user }}.</h6>
-	<h6>Published on: {{ post.publish }} Last Updated: {{ post.updated }}</h6>
+	<h6>Published on: {{ post.publish }} Last Updated: {{ post.updated }} Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 
 	<p>{{ post.content }}</p>
 
@@ -26,11 +32,10 @@
 			<hr>
 				<h6>Latest comments</h6>
 				{% for comment in post.comments.all %}
-					{% if not comment.parent %}
-						
-						<p>
+					{% if not comment.parent %}	
+					<p>
 					  <a class="btn btn-default" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-					    By: {{ comment.user }} - on <small>{{ comment.timestamp }}</small>
+					    By: {{ comment.user }} - on <small>{{ comment.timestamp }} </small>
 					  </a> 
 					</p>
 					<div class="collapse" id="collapseExample">
@@ -41,8 +46,9 @@
 					  <a href="#" class="btn btn-primary" role="button"> Reply </a>
 					  </div>
 					</div>
-
 					{% endif %}
+				{% empty %}
+					<span>No Comments yet!</span>
 				{% endfor %}
 			</ul>
 		{% else %}

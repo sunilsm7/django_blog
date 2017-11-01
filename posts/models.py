@@ -4,8 +4,11 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save, post_save
-from .utils import unique_slug_generator
+
+from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
+
+from .utils import unique_slug_generator
 # Create your models here.
 
 class Post(models.Model):
@@ -30,7 +33,7 @@ class Post(models.Model):
 
 	class Meta:
 		verbose_name_plural = "01 Posts"
-		ordering = ['-publish', '-updated']
+		ordering = ['-timestamp',]
 
 	def __unicode__(self):
 		return self.title
@@ -38,13 +41,9 @@ class Post(models.Model):
 	def __str__(self):
 		return self.title
 
-	# @property
-	# def get_last_ten_posts(self):
-	# 	return Post.objects.filter(draft=False)[:10]
+	def get_absolute_url(self):
+		return reverse_lazy('posts:details', args=[str(self.id)])
 
-	# @property
-	# def get_total_post_by_user(self):
-	# 	return Post.objects.filter(user=self.request.user).count()
 
 
 class Comment(models.Model):

@@ -14,10 +14,10 @@
           <a class="nav-link" href="{% url 'posts:list' %}">Posts</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Contact us</a>
+          <a class="nav-link" href="{% url 'contact' %}">Contact us</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About us</a>
+          <a class="nav-link" href="{% url 'about' %}">About</a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0" method="GET" action="">{% csrf_token %}
