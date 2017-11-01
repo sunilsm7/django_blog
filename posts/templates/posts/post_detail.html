@@ -13,6 +13,43 @@
 
 	<p>{{ post.content }}</p>
 
+	<h3>Comments</h3>
+	{% if user.is_authenticated %}
+		
+		<form action="." method="POST"> {% csrf_token %}
+			{% include 'includes/form-snippet.html' %}
+			<button type="submit" class="btn btn-primary">Comment</button>
+		</form>
+
+		
+			<ul>
+			<hr>
+				<h6>Latest comments</h6>
+				{% for comment in post.comments.all %}
+					{% if not comment.parent %}
+						
+						<p>
+					  <a class="btn btn-default" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+					    By: {{ comment.user }} - on <small>{{ comment.timestamp }}</small>
+					  </a> 
+					</p>
+					<div class="collapse" id="collapseExample">
+					<div class="conta">
+					  <div class="card card-block">
+					    {{ comment.content }}</br>
+					  </div>
+					  <a href="#" class="btn btn-primary" role="button"> Reply </a>
+					  </div>
+					</div>
+
+					{% endif %}
+				{% endfor %}
+			</ul>
+		{% else %}
+			<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to comment.</strong>
+	{% endif %}
 </div>
+
+
 
 {% endblock %}

@@ -29,7 +29,7 @@ class Post(models.Model):
 	timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
 	class Meta:
-		verbose_name_plural = "Posts"
+		verbose_name_plural = "01 Posts"
 		ordering = ['-publish', '-updated']
 
 	def __unicode__(self):
@@ -45,6 +45,25 @@ class Post(models.Model):
 	# @property
 	# def get_total_post_by_user(self):
 	# 	return Post.objects.filter(user=self.request.user).count()
+
+
+class Comment(models.Model):
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
+	post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+	content = models.TextField()
+	parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+	timestamp = models.DateTimeField(auto_now_add=True)
+	
+	class Meta:
+		verbose_name_plural = '02 Comments'
+		ordering = ['-timestamp']
+
+	def __str__(self):
+		return '{} {}'.format(self.user, self.post)
+
+	def __unicode__(self):
+		return '{} {}'.format(self.user, self.post)
 
 
 

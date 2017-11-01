@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Post
-from .forms import NewPostForm,PostForm
+from .forms import PostForm, CommentForm
 import datetime
 # Create your views here.
 
@@ -35,11 +35,24 @@ def posts_list(request):
 def post_details(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 	session_key = 'viewed_post_{}'.format(post.pk)
+	
 	if not request.session.get(session_key, False):
 		post.views += 1
 		post.save()
 		request.session[session_key] = True
-	return render(request, 'posts/post_detail.html', {'post': post})
+
+	if request.method == 'POST':
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			instance = form.save(commit=False)
+			instance.user = request.user
+			instance.post = post
+			form.save()
+			return redirect('posts:details', pk=post.pk)
+	else:
+		form = CommentForm()
+
+	return render(request, 'posts/post_detail.html', {'post': post, 'form':form})
 
 
 @login_required

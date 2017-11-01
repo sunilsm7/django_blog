@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 
 class NewPostForm(forms.Form):
@@ -13,5 +13,17 @@ class PostForm(forms.ModelForm):
 	class Meta:
 		model = Post
 		fields = ['title', 'content', 'draft']
+		widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Enter post title'}),
+            'content': forms.Textarea(attrs={'cols': 80, 'rows': 10, 'placeholder':'What is in your mind?'}),
+        }
 
-	
+
+class CommentForm(forms.ModelForm):
+
+	class Meta:
+		model = Comment
+		fields = ['content',]
+		widgets = {
+			'content': forms.Textarea(attrs={'rows': 5, 'placeholder':'What is in your mind?'}),	
+		}
