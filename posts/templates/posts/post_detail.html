@@ -17,7 +17,7 @@
 	<h6>By: {{ post.user }}.</h6>
 	<h6>Published on: {{ post.publish }} Last Updated: {{ post.updated }} Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 
-	<p>{{ post.content }}</p>
+	<p>{{ post.content|linebreaks }}</p>
 
 	<h3>Comments</h3>
 	{% if user.is_authenticated %}
@@ -26,24 +26,29 @@
 			{% include 'includes/form-snippet.html' %}
 			<button type="submit" class="btn btn-primary">Comment</button>
 		</form>
-
+	{% else %}
+			<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to comment.</strong>
+	{% endif %}
 		
 			<ul>
 			<hr>
-				<h6>Latest comments</h6>
+				<h5>Latest comments</h5>
 				{% for comment in post.comments.all %}
 					{% if not comment.parent %}	
-					<p>
-					  <a class="btn btn-default" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-					    By: {{ comment.user }} - on <small>{{ comment.timestamp }} </small>
-					  </a> 
-					</p>
-					<div class="collapse" id="collapseExample">
-					<div class="conta">
-					  <div class="card card-block">
-					    {{ comment.content }}</br>
+					<div class="card">
+					  <div class="card-header">
+					     <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }}</small></h6> 
 					  </div>
-					  <a href="#" class="btn btn-primary" role="button"> Reply </a>
+					  <div class="card-block">
+					    <h4 class="card-title"></h4>
+					    <p class="card-text">{{ comment.content }}</p>
+					  {% if user.is_authenticated %}
+						  	<a href="#" class="btn btn-primary" role="button"> Reply </a>
+					  {% else %}
+							<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to Reply.</strong>
+							<a href="#" class="btn btn-primary btn-sm" role="button"> View Replies </a>
+					   {% endif %}
+
 					  </div>
 					</div>
 					{% endif %}
@@ -51,9 +56,7 @@
 					<span>No Comments yet!</span>
 				{% endfor %}
 			</ul>
-		{% else %}
-			<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to comment.</strong>
-	{% endif %}
+		
 </div>
 
 

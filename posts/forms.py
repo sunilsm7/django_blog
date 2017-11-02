@@ -31,3 +31,7 @@ class ContactForm(forms.Form):
 
 	def send_email(self):
 		pass
+
+
+class SearchForm(forms.Form):
+	content = forms.CharField(max_length=120, widget=forms.TextInput(attrs={'placeholder':'Search Posts',}))

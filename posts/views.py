@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 
@@ -135,12 +137,15 @@ class HomeView(ListView):
 		queryset = Post.objects.filter(draft=False)[:10]
 		return queryset
 
+	def post(self, request, *args, **kwargs):
+		pass
+
 
 class PostListView(ListView):
 	model = Post
 	template_name = 'posts/post_list.html'
 	context_object_name = 'posts'
-	queryset = Post.objects.filter(draft=False)
+	# queryset = Post.objects.filter(draft=False)
 	paginate_by = 5
 
 	# def get_context_data(self, **kwargs):
@@ -148,22 +153,61 @@ class PostListView(ListView):
 	# 	context['posts'] = Post.objects.all().order_by('-publish')
 	# 	return context
 
+	def get_queryset(self):
+		queryset = Post.objects.filter(draft=False)
+		q = self.request.GET.get('q')
+
+		if q is not None:
+			queryset = Post.objects.filter(
+				Q(title__icontains=q),
+				Q(draft=False)
+				)
+			return queryset
+
+		return queryset
+
+
+	# def post(self, request, *args, **kwargs):
+	# 	q = self.request.POST.get('q')
+	# 	posts = Post.objects.filter(Q(title__icontains=q))
+	# 	return render(request, self.template_name, {'posts': posts})
+
 
 class PostDetailView(DetailView):
 	model = Post
 	template_name = 'posts/post_detail.html'
 	context_object_name = 'post'
-
-	# def get_queryset(self):
-	# 	pass
+	form_class = CommentForm
 
 	def get_context_data(self, **kwargs):
 		context = super(PostDetailView, self).get_context_data(**kwargs)
 		context['test_title'] = 'hello there'
 		return context
 
+	def get(self, request, *args, **kwargs):
+		self.object = self.get_object()
+		session_key = 'viewed_post_{}'.format(self.object.pk)
 
-class PostCreateView(CreateView):
+		if not request.session.get(session_key, False):
+			self.object.views += 1
+			self.object.save()
+			request.session[session_key] = True
+		
+		form = self.form_class()
+		return render(request, self.template_name, {'form': form, 'post':self.object})
+
+	def post(self, request, *args, **kwargs):
+		self.object = self.get_object()
+		self.form = self.form_class(request.POST)
+		if self.form.is_valid():
+			instance = self.form.save(commit=False)
+			instance.user = self.request.user
+			instance.post = self.object
+			self.form.save()
+		return render(request, self.template_name, {'form': self.form, 'post':self.object})
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
 	model = Post
 	form_class = PostForm
 	template_name = 'posts/new_post.html'
@@ -173,10 +217,8 @@ class PostCreateView(CreateView):
 		form.instance.publish = datetime.datetime.now()
 		return super(PostCreateView, self).form_valid(form)
 
-
 	def form_invalid(self, form):
 		return super(PostCreateView, self).form_invalid(form)
-
 
 	def get_context_data(self, **kwargs):
 		context = super(PostCreateView, self).get_context_data(**kwargs)
@@ -185,7 +227,7 @@ class PostCreateView(CreateView):
 		return context 
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
 	model = Post
 	form_class = PostForm
 	template_name = 'posts/new_post.html'
@@ -206,7 +248,7 @@ class PostUpdateView(UpdateView):
 	# 	return self.success_message('Post Updated Successfully!')
 
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
 	model = Post
 	template_name = 'posts/post_confirm_delete.html'
 	success_url = reverse_lazy('posts:list')

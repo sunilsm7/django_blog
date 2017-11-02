@@ -20,8 +20,8 @@
           <a class="nav-link" href="{% url 'about' %}">About</a>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0" method="GET" action="">{% csrf_token %}
-          <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search posts.">
+      <form class="form-inline my-2 my-lg-0 ml-auto" method="GET" action="{% url 'posts:list' %}">{% csrf_token %}
+          <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search posts." required>
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>  
       </form>
 
