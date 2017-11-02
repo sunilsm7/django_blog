@@ -14,10 +14,10 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
-
+	parent = forms.IntegerField(required=False, widget=forms.HiddenInput())
 	class Meta:
 		model = Comment
-		fields = ['content',]
+		fields = ['content', 'parent']
 		widgets = {
 			'content': forms.Textarea(attrs={'rows': 5, 'placeholder':'What is in your mind?'}),	
 		}

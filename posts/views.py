@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 
@@ -20,7 +20,7 @@ from django.views.generic.edit import (
 from django.urls import reverse_lazy
 
 from .forms import CommentForm, ContactForm, PostForm
-from .models import Post
+from .models import Post, Comment
 
 
 # Create your views here.
@@ -137,8 +137,14 @@ class HomeView(ListView):
 		queryset = Post.objects.filter(draft=False)[:10]
 		return queryset
 
-	def post(self, request, *args, **kwargs):
-		pass
+	def get_context_data(self, **kwargs):
+		context = super(HomeView, self).get_context_data(**kwargs)
+		posts_qs = Post.objects.filter(draft=False)
+		context['most_viewd_posts'] = posts_qs.order_by('-views')[:5]
+		context['updated_posts'] = posts_qs.order_by('-updated')[:5]
+		posts_objects = Post.objects.annotate(num_comments=Count('comments'))
+		context['most_commented_posts'] = posts_objects.order_by('-num_comments')[:5]
+		return context
 
 
 class PostListView(ListView):
@@ -252,3 +258,31 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 	model = Post
 	template_name = 'posts/post_confirm_delete.html'
 	success_url = reverse_lazy('posts:list')
+
+
+class CommentUpdateView(UpdateView):
+	# model = Comment
+	# template_name = 'posts/post_detail.html'
+	pass
+
+
+class RepliesListView(ListView):
+	model = Comment
+	template_name = 'posts/comment_replies.html'
+	context_object_name = 'replies'
+	paginate_by = 10
+
+	def get_queryset(self, *args,**kwargs):
+		comment_id = self.kwargs['comment_pk']
+		queryset = Comment.objects.filter(parent=comment_id)
+		return queryset
+
+	def get_context_data(self, **kwargs):
+		context = super(RepliesListView, self).get_context_data(**kwargs)
+		comment_id = self.kwargs['comment_pk']
+		context['comment'] = get_object_or_404(Comment, id=comment_id)
+		context['post_id'] = self.kwargs['pk']
+		return context 
+
+
+

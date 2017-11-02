@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} Reply Comment {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+  	<li class="breadcrumb-item"><a href="{% url 'posts:list' %}">Post List</a></li>
+  	<li class="breadcrumb-item"><a href="{% url 'posts:details' post_id %}">Post Details</a></li>
+  	<li class="breadcrumb-item active">Replies for comment:</li>
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="card">
+	  <div class="card-header">
+	   <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }}</small></h6> 
+	  </div>
+	  <div class="card-block">
+	    <h4 class="card-title"></h4>
+	    <p class="card-text">{{ comment.content }}</p>
+	    
+	  </div>
+</div>
+
+<h5>Latest replies</h5>
+{% for reply in replies %}
+	<div class="card">
+	  <div class="card-header comments-header">
+	   <h6>By: {{ reply.user }}. <small>on -{{ reply.timestamp }} last updated: {{ reply.updated }}</small></h6> 
+	  </div>
+	  <div class="card-block">
+	    <h4 class="card-title"></h4>
+	    <p class="card-text">{{ reply.content }}</p>
+	    <a href="#" class="btn btn-primary btn-sm" role="button"> Reply </a>
+		<a href="{% url 'posts:replies' comment.post.pk reply.pk %}" class="btn btn-primary btn-sm" role="button"> View Replies </a>
+	  </div>
+	</div>
+{% empty %}
+	<span>No replies yet!</span>
+{% endfor %}
+
+{% include 'includes/pagination.html' with page_obj=replies %}		
+{% endblock %}

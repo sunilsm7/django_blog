@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 
 	'accounts',
 	'posts',
-	
+	'markdown',
 	'widget_tweaks',
 ]
 
