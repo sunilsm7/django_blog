@@ -47,6 +47,12 @@ class Post(models.Model):
 	def get_absolute_url(self):
 		return reverse_lazy('posts:details', args=[str(self.id)])
 
+	@property
+	def get_comments(self):
+		instance = self
+		qs = Comment.objects.filter(post=instance)
+		return qs
+
 
 
 class Comment(models.Model):
@@ -73,6 +79,8 @@ class Comment(models.Model):
 	def get_content_as_markdown(self):
 		return mark_safe(markdown(self.content, safe_mode='escape'))
 
+	def has_children(self):
+		return Comment.objects.filter(parent=self)
 
 
 def rl_pre_save_receiver(sender, instance, *args, **kwargs):

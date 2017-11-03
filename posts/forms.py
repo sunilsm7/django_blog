@@ -3,10 +3,9 @@ from .models import Post, Comment
 from django.core.mail import send_mail
 
 class PostForm(forms.ModelForm):
-	
 	class Meta:
 		model = Post
-		fields = ['title', 'content', 'read_time', 'draft']
+		fields = ['title', 'content', 'read_time', 'draft',]
 		widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Enter post title'}),
             'content': forms.Textarea(attrs={'cols': 80, 'rows': 10, 'placeholder':'What is in your mind?'}),
@@ -14,12 +13,11 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
-	parent = forms.IntegerField(required=False, widget=forms.HiddenInput())
 	class Meta:
 		model = Comment
-		fields = ['content', 'parent']
+		fields = ['content',]
 		widgets = {
-			'content': forms.Textarea(attrs={'rows': 5, 'placeholder':'What is in your mind?'}),	
+			'content': forms.Textarea(attrs={'rows': 1, 'placeholder':'What is in your mind?', 'class':'textarea-content'}),	
 		}
 
 

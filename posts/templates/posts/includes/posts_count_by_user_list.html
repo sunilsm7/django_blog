@@ -1,0 +1,5 @@
+<ul>
+{% for user in user_list %}
+	<li><strong class="text-muted">{{ user.username|title }}, Posts: {{ user.post_set.count }}</strong></li>
+{% endfor %}
+</ul>

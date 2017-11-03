@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+
 {% block title%} Blog Homepage {% endblock %}
 
 {% block breadcrumb %}
@@ -7,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+
 
 <div class="row">
 	<div class="container col-sm-8">
@@ -17,11 +19,11 @@
 	{% for post in posts %}
 		<div class="card">
 		<div class="card-header home-post-header">
-	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
+	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title|title }}</a></h4>
 	  	  </div>
 
 		  <div class="card-block">
-		   <!--  <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }} --></a></h4>
+		   <!--  <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }} </a></h4>-->
 		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:{{ post.user}}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
 		    <p class="card-text">{{ post.get_content_as_markdown|linebreaks|truncatewords:30 }}</p>
 
@@ -37,41 +39,11 @@
 	{% endfor %}
 	<h3><a href="{% url 'posts:list' %}">More Stories</a></h3>
 </div>
+
 <div class="container col-sm-4">
-	<div class="card" style="width: 20rem;">
-	  <div class="card-block">
-	    <h4 class="card-title">Recent Updated Posts</h4>
-	    <ul>
-	    	{% for post in updated_posts %}
-	    		<li><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></li>
-	    	{% endfor %}
-	    </ul>    
-	  </div>
-	</div>
-
-	<div class="card" style="width: 20rem;">
-	  <div class="card-block">
-	    <h4 class="card-title">Most Viewd Posts</h4>
-	    <ul>
-	    	{% for post in most_viewd_posts %}
-	    		<li><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></li>
-	    	{% endfor %}
-	    </ul>
-	  </div>
-	</div>
-
-	<div class="card" style="width: 20rem;">
-	  <div class="card-block">
-	    <h4 class="card-title">Most Commented Posts</h4>
-	    <ul>
-	    	{% for post in most_commented_posts %}
-	    		<li><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></li>
-	    	{% endfor %}
-	    </ul>
-	  </div>
-	</div>
-
+	{% include 'includes/sidebar.html' %}
 </div>
+
 </div>
 
 {% endblock %}

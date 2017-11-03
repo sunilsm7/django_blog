@@ -14,8 +14,8 @@
 	{% include 'includes/messages.html' %}
 
 	<h2>{{ post.title }}</h2>
-	<h6>By: {{ post.user }}.</h6>
-	<h6>Published on: {{ post.publish }} Last Updated: {{ post.updated }} Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
+	<h6 class="text-muted">By: {{ post.user }}.</h6>
+	<h6 class="text-muted">Published on: {{ post.publish }} Last Updated: {{ post.updated }} Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 
 	<p>{{ post.get_content_as_markdown }}</p>
 
@@ -24,7 +24,7 @@
 		
 		<form action="." method="POST"> {% csrf_token %}
 			{% include 'includes/form-snippet.html' %}
-			<button type="submit" class="btn btn-primary">Comment</button>
+			<button type="submit" class="btn btn-primary btn-comment">Comment</button>
 		</form>
 	{% else %}
 			<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to comment.</strong>
@@ -32,20 +32,28 @@
 		
 	<hr>
 		<h5>Latest comments</h5>
-		{% for comment in post.comments.all %}
+		{% for comment in post.get_comments %}
 			{% if comment.parent == None%}	
 			<div class="card">
 			  <div class="card-header comments-header">
-			     <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }}</small></h6> 
+			     <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }} Replies: {{ comment.has_children.count }}</small></h6> 
 			  </div>
 			  <div class="card-block">
 			    <h4 class="card-title"></h4>
 			    <p class="card-text">{{ comment.content }}</p>
 				  	<a href="#" class="btn btn-primary btn-sm" role="button"> Reply </a>
-				  	<a href="{% url 'posts:replies' post.pk comment.pk %}" class="btn btn-primary btn-sm" role="button"> View Replies </a>
-				  	<ul>
-				  		{{ comment.parent }}
+				   <a href="#" class="btn btn-primary btn-sm" role="button">View Replies</a>
+				  	
+				  	<ul class="comment-replies">
+				  		{% for replies in  comment.has_children %}
+				  			<li>{{ replies.content }}</li>
+				  		{% endfor %}
 				  	</ul>
+				  	<form action="." method="POST" class="form-inline"> {% csrf_token %}
+						{% include 'includes/form-snippet.html' %}
+						 <input type='hidden' name='parent_id' value='{{ comment.id }}'>
+						<button type="submit" class="btn btn-secondary ml-2 btn-reply">Reply</button>
+					</form>
 			  </div>
 			</div>
 			{% endif %}

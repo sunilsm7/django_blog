@@ -1,0 +1,29 @@
+{% load post_extras %}
+
+<div class="card" style="width: 20rem;">
+  <div class="card-block">
+    <h4 class="card-title">Recent Updated Posts</h4>
+    	{% latest_updated_posts %}  
+  </div>
+</div>
+
+<div class="card" style="width: 20rem;">
+  <div class="card-block">
+    <h4 class="card-title">Most Viewd Posts</h4>
+    	{% most_viewd_posts %}
+  </div>
+</div>
+
+<div class="card" style="width: 20rem;">
+  <div class="card-block">
+    <h4 class="card-title">Most Commented Posts</h4>
+    	{% most_commented_posts %}
+  </div>
+</div>
+
+<div class="card" style="width: 20rem;">
+  <div class="card-block">
+    <h4 class="card-title">Most Posts by User</h4>
+    	{% most_posts_by_user %}
+  </div>
+</div>

@@ -139,11 +139,7 @@ class HomeView(ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(HomeView, self).get_context_data(**kwargs)
-		posts_qs = Post.objects.filter(draft=False)
-		context['most_viewd_posts'] = posts_qs.order_by('-views')[:5]
-		context['updated_posts'] = posts_qs.order_by('-updated')[:5]
-		posts_objects = Post.objects.annotate(num_comments=Count('comments'))
-		context['most_commented_posts'] = posts_objects.order_by('-num_comments')[:5]
+		context['hello_text'] = 'hello there'
 		return context
 
 
@@ -198,17 +194,21 @@ class PostDetailView(DetailView):
 			self.object.views += 1
 			self.object.save()
 			request.session[session_key] = True
-		
 		form = self.form_class()
 		return render(request, self.template_name, {'form': form, 'post':self.object})
 
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
+		# parent_id = self.request.GET.get('parent_id')
+		
 		if self.form.is_valid():
 			instance = self.form.save(commit=False)
 			instance.user = self.request.user
 			instance.post = self.object
+			# if parent_id is not None:
+			#	parent = get_object_or_404(Comment, pk=parent_id)
+			# 	instance.parent = parent
 			self.form.save()
 		return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
