@@ -71,7 +71,7 @@ class Comment(models.Model):
 	# 	return Comment.objects.filter(parent=self.parent)
 
 	def __str__(self):
-		return '{} {}'.format(self.user, self.post, self.parent)
+		return '{} {}'.format(self.user, self.content, self.parent)
 
 	def __unicode__(self):
 		return '{} {}'.format(self.user, self.content, self.parent)

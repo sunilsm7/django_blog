@@ -24,14 +24,14 @@
 	<h2>Log in</h2>
 	<form method="post" action="{% url 'accounts:login' %}">
 	{% csrf_token %}
-	{% include 'includes/form-snippet.html' %}
+		{% include 'includes/form-snippet.html' %}
 
-	<input type="submit" value="login" class="btn btn-primary btn-block" />
-	<input type="hidden" name="next" value="{{ next }}" />
+		<input type="submit" value="login" class="btn btn-primary btn-block" />
+		<input type="hidden" name="next" value="{{ next }}" />
 	</form>
 
 	{# Assumes you setup the password_reset view in your URLconf #}
-	<p><a href="#">Forgot your password?</a></p>
+	<p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
 	<p>New to Site ? <a href="{% url 'accounts:signup' %}">Register here</a></p>
 </div>
 </div>

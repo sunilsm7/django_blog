@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Count
@@ -200,15 +200,15 @@ class PostDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
-		# parent_id = self.request.GET.get('parent_id')
+		parent_id = self.request.GET.get('parent_id')
 		
 		if self.form.is_valid():
 			instance = self.form.save(commit=False)
 			instance.user = self.request.user
 			instance.post = self.object
-			# if parent_id is not None:
-			#	parent = get_object_or_404(Comment, pk=parent_id)
-			# 	instance.parent = parent
+			if parent_id is not None:
+				parent = get_object_or_404(Comment, pk=parent_id)
+				instance.parent = parent
 			self.form.save()
 		return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
@@ -233,9 +233,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 		return context 
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 	model = Post
 	form_class = PostForm
+	permission_required = ('posts.can_change')
 	template_name = 'posts/new_post.html'
 	# success_url = reverse_lazy('posts:list')
 	success_message = "Post updated successfully"
@@ -254,11 +255,11 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 	# 	return self.success_message('Post Updated Successfully!')
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 	model = Post
 	template_name = 'posts/post_confirm_delete.html'
 	success_url = reverse_lazy('posts:list')
-
+	permission_required = ('posts.can_delete')
 
 class CommentUpdateView(UpdateView):
 	# model = Comment

@@ -23,7 +23,7 @@
 		  <div class="card-block">
 		    <!-- <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4> -->
 		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }}, By:{{ post.user}}. Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
-		    <p class="card-text">{{ post.content|linebreaks|truncatewords:30 }}</p>
+		    <p class="card-text">{{ post.get_content_as_markdown|truncatewords:30 }}</p>
 
 		    <a href="{% url 'posts:details' post.id %}" class="card-link" role="button">...Read more</a>
 

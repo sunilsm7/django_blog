@@ -22,13 +22,12 @@ from django.views.generic import TemplateView
 from posts import views as post_views
 
 urlpatterns = [
-	url(r'^admin/', admin.site.urls),
+	url(r'^$', post_views.HomeView.as_view(), name='home'),
+	url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+	url(r'^posts/', include('posts.urls', namespace='posts')),
 	url(r'^about/$', TemplateView.as_view(template_name="about.html"), name='about'),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),
-	url(r'^posts/', include('posts.urls', namespace='posts')),
-	url(r'^accounts/', include('accounts.urls', namespace='accounts')),
-	# url(r'^$', post_views.home, name='home'),
-	url(r'^$', post_views.HomeView.as_view(), name='home'),
+	url(r'^admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
