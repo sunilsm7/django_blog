@@ -24,6 +24,7 @@ from posts import views as post_views
 urlpatterns = [
 	url(r'^$', post_views.HomeView.as_view(), name='home'),
 	url(r'^accounts/', include('accounts.urls', namespace='accounts')),
+	# url(r'^accounts/', include('allauth.urls')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
 	url(r'^about/$', TemplateView.as_view(template_name="about.html"), name='about'),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, Count
+from django.db.models import Q, F, Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 
@@ -148,7 +148,7 @@ class PostListView(ListView):
 	template_name = 'posts/post_list.html'
 	context_object_name = 'posts'
 	# queryset = Post.objects.filter(draft=False)
-	paginate_by = 5
+	paginate_by = 10
 
 	# def get_context_data(self, **kwargs):
 	# 	context = super(PostListView, self).get_context_data(**kwargs)
@@ -156,14 +156,11 @@ class PostListView(ListView):
 	# 	return context
 
 	def get_queryset(self):
-		queryset = Post.objects.filter(draft=False)
+		queryset = Post.objects.published()
 		q = self.request.GET.get('q')
 
 		if q is not None:
-			queryset = Post.objects.filter(
-				Q(title__icontains=q),
-				Q(draft=False)
-				)
+			queryset = Post.objects.search(q)
 			return queryset
 
 		return queryset
@@ -191,7 +188,8 @@ class PostDetailView(DetailView):
 		session_key = 'viewed_post_{}'.format(self.object.pk)
 
 		if not request.session.get(session_key, False):
-			self.object.views += 1
+			# self.object.views += 1
+			self.object.views = F('views') + 1
 			self.object.save()
 			request.session[session_key] = True
 		form = self.form_class()
@@ -200,17 +198,27 @@ class PostDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
-		parent_id = self.request.GET.get('parent_id')
+
+		try:
+			parent_id = self.request.POST.get('parent_id')
+		except:
+			parent_id = None
 		
 		if self.form.is_valid():
 			instance = self.form.save(commit=False)
 			instance.user = self.request.user
 			instance.post = self.object
+			
 			if parent_id is not None:
 				parent = get_object_or_404(Comment, pk=parent_id)
 				instance.parent = parent
+				self.form.save()
 			self.form.save()
-		return render(request, self.template_name, {'form': self.form, 'post':self.object})
+			return redirect(self.object.get_absolute_url())
+		else:
+			return self.render(request)
+
+		#return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):

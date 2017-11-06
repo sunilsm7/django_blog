@@ -13,13 +13,13 @@ register = template.Library()
 
 @register.inclusion_tag('posts/includes/custom_tags_posts_list.html')
 def latest_updated_posts():
-	posts_list = Post.objects.filter(draft=False).order_by('-updated')[:5]
+	posts_list = Post.objects.published().order_by('-updated')[:5]
 	return {'posts_list': posts_list}
 
 
 @register.inclusion_tag('posts/includes/custom_tags_posts_list.html')
 def most_viewd_posts():
-	posts_list = Post.objects.filter(draft=False).order_by('-views')[:5]
+	posts_list = Post.objects.published().order_by('-views')[:5]
 	return {'posts_list': posts_list}
 
 

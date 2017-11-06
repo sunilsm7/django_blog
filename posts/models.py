@@ -3,13 +3,19 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q, F, Count
 from django.db.models.signals import pre_save, post_save
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
 from django.utils.html import mark_safe
 from markdown import markdown
+
+from .managers import PostManager
 from .utils import unique_slug_generator
 # Create your models here.
+
+
+
 
 class Post(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
@@ -31,6 +37,9 @@ class Post(models.Model):
 	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
 	timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
+	objects = PostManager()
+	# objects  = models.Manager()
+
 	class Meta:
 		verbose_name_plural = "01 Posts"
 		ordering = ['-timestamp',]
@@ -46,6 +55,10 @@ class Post(models.Model):
 
 	def get_absolute_url(self):
 		return reverse_lazy('posts:details', args=[str(self.id)])
+
+	def get_post_views(self):
+		return self.views
+
 
 	@property
 	def get_comments(self):
@@ -76,10 +89,13 @@ class Comment(models.Model):
 	def __unicode__(self):
 		return '{} {}'.format(self.user, self.content, self.parent)
 
+	# def get_absolute_url(self):
+	# 	return reverse_lazy('posts:replies', args=[str(self.post.id), str(self.id)])
+
 	def get_content_as_markdown(self):
 		return mark_safe(markdown(self.content, safe_mode='escape'))
 
-	def has_children(self):
+	def has_replies(self):
 		return Comment.objects.filter(parent=self)
 
 

@@ -5,8 +5,10 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic.edit import FormView
 from .forms import SignUpForm
 
@@ -35,3 +37,14 @@ class SignUpView(FormView):
 
 	def form_invalid(self, form):
 		return super(SignUpView, self).form_invalid(form)
+
+
+class MyProfile(View):
+	model = User
+	template_name = 'accounts/my_profile.html'
+	context_object_name = 'user_posts'
+	paginate_by = 10
+	
+	def get(self, request, *args, **kwargs):
+		return render(request, self.template_name, {'user_posts': self.context_object_name})
+

@@ -2,27 +2,26 @@
 
 {% load humanize %}
 
-{% block title%} Blog List {% endblock %}
+{% block title %} {{ user }} Profile {% endblock %}
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  	<li class="breadcrumb-item active">Post List</li>
+	<li class="breadcrumb-item active">User Profile</li>
 {% endblock %}
 
 {% block content %}
+	<h2>All Published Posts </h2>
 
-<h2> Blog Posts</h2>
-
-{% include 'includes/messages.html' %}
-
-	{% for post in posts %}
+	{% include 'includes/messages.html' %}
+	
+	{% for post in user.post_set.published %}
 		<div class="card">
 		   <div class="card-header post-header">
 	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
 	  	  </div>
 		  <div class="card-block">
 		    <!-- <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4> -->
-		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }}, By:<a href="{% url 'posts:list' %}?q={{ post.user }}">{{ post.user}}.</a> Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
+		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }}, By:{{ post.user}}. Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
 		    <p class="card-text">{{ post.get_content_as_markdown|truncatewords:30 }}</p>
 
 		    <a href="{{ post.get_absolute_url }}" class="card-link" role="button">...Read more</a>
@@ -40,4 +39,6 @@
 
 {% include 'includes/pagination.html' %}
 
+
+{{ user.post_set.drafts }}
 {% endblock %}
