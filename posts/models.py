@@ -18,24 +18,24 @@ from .utils import unique_slug_generator
 
 
 class Post(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
-	title = models.CharField(max_length=120)
-	slug = models.SlugField(unique=True)
-	image = models.ImageField(upload_to='documents/',
+	user 			= models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
+	title 			= models.CharField(max_length=120)
+	slug 			= models.SlugField(unique=True)
+	image 			= models.ImageField(upload_to='documents/',
 		null = True,
 		blank=True,
 		width_field="width_field",
 		height_field="height_field"
 		)
-	height_field = models.IntegerField(default=0)
-	width_field = models.IntegerField(default=0)
-	content = models.TextField()
-	draft = models.BooleanField(default = False)
-	publish = models.DateField(auto_now=False, auto_now_add=False)
-	read_time = models.IntegerField(default = 0)
-	views = models.PositiveIntegerField(default=0)
-	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
-	timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+	height_field 	= models.IntegerField(default=0)
+	width_field 	= models.IntegerField(default=0)
+	content 		= models.TextField()
+	draft 			= models.BooleanField(default = False)
+	publish 		= models.DateField(auto_now=False, auto_now_add=False)
+	read_time 		= models.IntegerField(default = 0)
+	views 			= models.PositiveIntegerField(default=0)
+	updated 		= models.DateTimeField(auto_now=True, auto_now_add=False)
+	timestamp 		= models.DateTimeField(auto_now=False, auto_now_add=True)
 
 	objects = PostManager()
 	# objects  = models.Manager()
@@ -69,10 +69,10 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
-	post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+	user 	= models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
+	post 	= models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
 	content = models.TextField()
-	parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+	parent 	= models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 	updated = models.DateTimeField(auto_now=True, auto_now_add=False)
 	timestamp = models.DateTimeField(auto_now_add=True)
 	

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, F, Count
+from django.db.models import Q, F, Count, ExpressionWrapper, IntegerField
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 
@@ -160,7 +160,7 @@ class PostListView(ListView):
 		q = self.request.GET.get('q')
 
 		if q is not None:
-			queryset = Post.objects.search(q)
+			queryset = queryset.search(q)
 			return queryset
 
 		return queryset
@@ -189,7 +189,7 @@ class PostDetailView(DetailView):
 
 		if not request.session.get(session_key, False):
 			# self.object.views += 1
-			self.object.views = F('views') + 1
+			self.object.views = ExpressionWrapper(F('views') + 1, output_field=IntegerField)
 			self.object.save()
 			request.session[session_key] = True
 		form = self.form_class()
