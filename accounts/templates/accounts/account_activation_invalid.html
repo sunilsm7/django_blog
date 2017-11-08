@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Account Activation {% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item "><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'accounts:signup' %}">Register</a></li>
+  <li class="breadcrumb-item active">Account Activation link failed</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-8 offset-2">
+      
+          <h3 class="card-title">Account Activation link failed</h3>
+          <p> </p>
+          <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Return to log in</a></button>
+          </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -7,9 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.mail import send_mail
 from django.db.models import Q, F, Count, ExpressionWrapper, IntegerField
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
+
 
 from django.views.generic.edit import (
 	FormView,
@@ -118,10 +120,15 @@ def delete_post(request, pk):
 class ContactView(FormView):
 	template_name = 'contact.html'
 	form_class = ContactForm
-	success_url = 'home'
+	success_url = reverse_lazy('home')
 
 	def form_valid(self, form):
-		form.send_email()
+		name = form.cleaned_data['name']
+		subject = form.cleaned_data['subject']
+		email = form.cleaned_data['email']
+		message = form.cleaned_data['message']
+
+		send_mail(subject, message, email, ['admin@example.com'])
 		return super(ContactView, self).form_valid(form)
 
 	def form_invalid(self, form):

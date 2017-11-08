@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Account Activation {% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item "><a href="{% url 'home' %}">Home</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'accounts:signup' %}">Register</a></li>
+  <li class="breadcrumb-item active">Account Activation link sent</li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-8 offset-2">
+      
+          <h3 class="card-title">Account Activation link Sent</h3>
+          <p>We've emailed you instructions for activating your account, if an account exists with the email you entered. You should receive them shortly.
+
+          If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder.</p>
+          <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Return to log in</a></button>
+          </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -26,7 +26,7 @@ SECRET_KEY = '-#8j-y^)smx#cc8$i%(zy0ik4_3dzoqoxkdvwgvp5)hi^g3q9+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','testserver']
 
 
 # Application definition
@@ -80,13 +80,21 @@ TEMPLATES = [
 	},
 ]
 
-AUTHENTICATION_BACKENDS = (
-	# Needed to login by username in Django admin, regardless of `allauth`
-	'django.contrib.auth.backends.ModelBackend',
+FIXTURE_DIRS = [
+	{
+		'DIRS' : [os.path.join(BASE_DIR, 'fixtures')],
+		'APP_DIRS' : True,
+	},
+]
 
-	# `allauth` specific authentication methods, such as login by e-mail
-	'allauth.account.auth_backends.AuthenticationBackend',
-)
+
+# AUTHENTICATION_BACKENDS = (
+# 	# Needed to login by username in Django admin, regardless of `allauth`
+# 	'django.contrib.auth.backends.ModelBackend',
+
+# 	# `allauth` specific authentication methods, such as login by e-mail
+# 	'allauth.account.auth_backends.AuthenticationBackend',
+# )
 
 
 WSGI_APPLICATION = 'django_blog.wsgi.application'
@@ -169,6 +177,6 @@ from django.contrib.messages import constants as message_constants
 MESSAGE_LEVEL = message_constants.DEBUG
 
 
-SITE_ID = 1
+SITE_ID = 5
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

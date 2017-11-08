@@ -27,8 +27,6 @@ class ContactForm(forms.Form):
 	email = forms.CharField(max_length=120, widget=forms.EmailInput(attrs={'placeholder':'Enter valid email id. eg. abc@gmail.com',}))
 	message = forms.CharField(widget = forms.Textarea(attrs={'placeholder':'what is in your mind ?',}))
 
-	def send_email(self):
-		pass
 
 
 class SearchForm(forms.Form):
