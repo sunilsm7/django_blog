@@ -4,15 +4,18 @@
   {{ hidden_field }}
 {% endfor %}
 
+<div id="error" class="text-danger"></div>
 {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
     {% for error in form.non_field_errors %}
       {{ error }}
     {% endfor %}
+
   </div>
 {% endif %}
 
 {% for field in form.visible_fields %}
+
   <div class="form-group">
     
     {{ field.label_tag }} 
@@ -21,14 +24,17 @@
         {% render_field field class="form-control is-invalid" %}
         {% for error in field.errors %}
           <div class="invalid-feedback">
+
             {{ error }}
           </div>
         {% endfor %}
       {% else %}
         {% render_field field class="form-control is-valid" %}
+        <div id="errorMessage" class="error-message text-danger"></div>
       {% endif %}
     {% else %}
         {% render_field field class="form-control" %}
+        <div id="errorMessage" class="error-message text-danger"></div>
     {% endif %}
 
     {% if field.help_text %}
