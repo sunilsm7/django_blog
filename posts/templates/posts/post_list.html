@@ -16,7 +16,7 @@
 {% include 'includes/messages.html' %}
 
 	{% for post in posts %}
-		<div class="card">
+		<div class="card" id="id_posts_list">
 		   <div class="card-header post-header">
 	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
 	  	  </div>

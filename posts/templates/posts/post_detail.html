@@ -31,7 +31,7 @@
 		<h5>Latest comments</h5>
 		{% for comment in post.get_comments %}
 			{% if comment.parent == None %}	
-			<div class="card">
+			<div class="card" id="id_comment_{{ comment.id }}">
 			  <div class="card-header comments-header">
 				 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }} Replies: {{ comment.has_children.count }}</small></h6> 
 			  </div>

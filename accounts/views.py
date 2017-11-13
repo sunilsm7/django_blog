@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -86,4 +87,20 @@ class MyProfile(View):
 	
 	def get(self, request, *args, **kwargs):
 		return render(request, self.template_name, {'user_posts': self.context_object_name})
+
+
+def validate_username(request):
+	if request.is_ajax:
+		username = request.GET.get('username', None)
+		email = request.GET.get('email', None)
+		users = User.objects.all()
+		data = {
+			'username_is_taken' : users.filter(username__iexact=username).exists(),
+			'email_is_taken' : users.filter(email__iexact=email).exists()
+		}
+		if data['username_is_taken']:
+			data['username_error_message'] = 'A user with this username already exists.'
+		elif data['email_is_taken']:
+			data['email_error_message'] = 'You can not use this email id.'
+		return JsonResponse(data)
 

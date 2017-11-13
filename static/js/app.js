@@ -1,140 +1,165 @@
-console.log('app.js loaded');
+$(document).ready(function(){
 
-let form = document.querySelector("#signUpForm");
-let $email_id = document.querySelector('#id_email');
-let $id_username = document.querySelector('#id_username');
-let $id_password1 = document.querySelector('#id_password1');
-let $id_password2 = document.querySelector('#id_password2');
-let error = document.querySelector('#error');
+	console.log('app.js loaded');
+		// using jQuery
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
 
+	var csrftoken = getCookie('csrftoken');
 
-// for email validations
-let ValidateEmail= function(email) {
-    var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-    return expr.test(email);
-};
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});
 
-form.addEventListener("focus", function( event ) {
-  // event.target.style.background = "pink";    
-  	$id_username.onfocus = function(e) {
-	  if (this.classList.contains('invalid-feedback')) {
-	    this.classList.remove('invalid-feedback');
-	    let error_message = this.parentElement.children.errorMessage;
-	    error_message.textContent = "";
-	  }
-	};
+	$('#id_username').on({
+		change:function(event){
+			let $this_ = $(this);
+			let error_message = $this_.next('#errorMessage');
+			let urlEndPoint = "/accounts/validate_username/";
 
-  	$id_username.onblur = function(e) {
-		let error_message = this.parentElement.children.errorMessage;
-	  	if (this.value == '') { 
-	    	this.classList.add('invalid-feedback');
-	    	error_message.textContent = 'Please enter username.';
-	  	}
-	  	else{
-	  		error_message.textContent = '';
-	  	}
-	};
+			$.ajax({
+				url :urlEndPoint,
+				method:'GET',
+				data: {
+					'username': $this_.val(),
+				},
+				dataType:'json',
+				success: function(data){
+					if(!data.username_error_message){
+						$this_.closest('div').find('.error-message').show().html('username available');						
+					}
 
-	$email_id.onblur = function(e) {
-	  if (!ValidateEmail(this.value)) { 
-	    this.classList.add('invalid-feedback');
-	    let error_message = this.parentElement.children.errorMessage;
-	    error_message.textContent = 'Please enter a correct email.';
-	  }
-	};
+					$this_.closest('div').find('.error-message').show().html(data.username_error_message);
+					
+				},
+				error:function(xhr,status,error){
+					console.log(error);
+				}
+			});
+		},
 
-	$email_id.onfocus = function(e) {
-	  if (this.classList.contains('invalid-feedback')) {
-	    // remove the "error" indication, because the user wants to re-enter something
-	    this.classList.remove('invalid-feedback');
-	    let error_message = this.parentElement.children.errorMessage;
-	    error_message.textContent = "";
-	  }
-	};
+		// focus:function(event){
+		// 	$(this).closest('div').find('.error-message').hide();
+		// },
 
-	$id_password1.onblur = function(e) {
-		let error_message = this.parentElement.children.errorMessage;
-	  	if (this.value == '') { 
-	    	this.classList.add('invalid-feedback');
-	    	error_message.textContent = 'Please enter password.';
-	  	}
-	  	else if($id_password2.value!==''){
-	  		if(this.value !== $id_password2.value)
-	  		{
-	  			error_message.textContent = 'The two password fields didn\'t match.';;
-	  		}
-	  	}
-	  	else{
-	  		error_message.textContent = '';
-	  	}
-	};
+		blur:function(event){
+			if($(this).val() === '')
+			{
+				$(this).closest('div').find('.error-message').show().text('Please enter username id.');
+			}
+			
+		},
 
-	$id_password1.onfocus = function(e) {
-	  if (this.classList.contains('invalid-feedback')) {
-	    // remove the "error" indication, because the user wants to re-enter something
-	    this.classList.remove('invalid-feedback');
-	    let error_message = this.parentElement.children.errorMessage;
-	    error_message.textContent = "";
-	  }
-	};
+	});
 
-
-	$id_password2.onblur = function(e) {
-		let error_message = this.parentElement.children.errorMessage;
-	  	if (this.value == '') { 
-	    	this.classList.add('invalid-feedback');
-	    	error_message.textContent = 'Please enter password confirmation.';
-	  	}
-	  	else if(this.value !== $id_password1.value){
-	  		error_message.textContent = 'The two password fields didn\'t match.';	
-	  	}
-	  	else{
-	  		error_message.textContent = '';
-	  	}
-	};
-
-	$id_password2.onfocus = function(e) {
-	  if (this.classList.contains('invalid-feedback')) {
-	    // remove the "error" indication, because the user wants to re-enter something
-	    this.classList.remove('invalid-feedback');
-	    let error_message = this.parentElement.children.errorMessage;
-	    error_message.textContent = "";
-	  }
-	};
 	
 
+	// for email validations
+	let ValidateEmail= function(email) {
+	    var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+	    return expr.test(email);
+	};
 
 
-	// $id_password2.onchange = function(){
-	// 	let error_message = this.parentElement.children.errorMessage;
-	// 	if (this.value !== $id_password1.value)
-	// 	{
-	// 		error_message.textContent = 'The two password fields didn\'t match.'
-	// 	}
-	// 	else{
-	// 		error_message.textContent = ''
-	// 	}	
+	$('#id_email').on({
+		change:function(event){
+			let $this_ = $(this);
+			let error_message = $this_.closest('div').find('.error-message');
+			let urlEndPoint = "/accounts/validate_username/";
+			// if($this_.val() !== ''){
+			// 	if(!ValidateEmail($this_.val())){
+			// 		$this_.closest('div').find('.error-message').show().text('Please enter valid email id.');
+			// 	}
+			// 	else{
+			// 		$this_.closest('div').find('.error-message').hide();
+			// 	}
+			// }
+			// else{
+
+			// 	$this_.closest('div').find('.error-message').show().text('Please enter email id.');		
+			// }
+			$.ajax({
+				url :urlEndPoint,
+				method:'GET',
+				data: {
+					'email': $this_.val(),
+				},
+				dataType:'json',
+				success: function(data){
+					$this_.closest('div').find('.error-message').show().html(data.email_error_message);
+				},
+				error:function(xhr,status,error){
+					console.log(error);
+				}
+			});
+
+		},
+
+		focus:function(event){
+			$(this).closest('div').find('.error-message').hide();
+		},
+
+		// blur:function(event){
+		// 	if($(this).val() ==='')
+		// 	{
+		// 		$(this).closest('div').find('.error-message').show().text('Please enter email id.');				
+		// 	}	
+			
+		// },
+
+	});
+
+	
+
+	$('#id_password1').change(function(event){
+		let $this_ = $(this);
+		let error_message = $this_.next('#errorMessage');
+		if ($this_.val() == '')
+		{
+			$($this_).next('#errorMessage').show().text('Please enter password');	
+		}
+		else{
+			$($this_).next('#errorMessage').hide();		
+		}	
+	});
+
+
+	$('#id_password2').change(function(event){
+		let id_password1 = $('#id_password1').val();
+		//let id_password2 = $(this).val();
+		let $this_ = $(this);
+		let error_message = $this_.next('#errorMessage');
+		if ($this_.val() !== id_password2){
+			error_message.show().text('password are not matched.');
+			console.log('password\'s are not matched.');
+		}
+		else{
+			error_message.hide();	
+		}	
 		
-	// };
+	});
 
-	// $id_username.oninput = function(){
-	// 	let error_message = this.parentElement.children.errorMessage;
-	// 	errorMessage.textContent = this.value;
-	// };
+});
 
-	// $id_username.onchange = function(){
-	// 	let error_message = this.parentElement.children.errorMessage;
-	// 	error_message.textContent = this.value;
-	// };
-
-	// $id_username.addEventListener('input', function (e) {
-	// 	let error_message = this.parentElement.children.errorMessage;
-	// 	error_message.textContent = e.target.value;
-	// }, false);
-
-}, true);
-
-form.addEventListener("blur", function( event ) {
-  // event.target.style.background = "";    
-}, true);
 
