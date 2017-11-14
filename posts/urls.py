@@ -15,5 +15,6 @@ urlpatterns = [
 	# url(r'^list/(?P<pk>\d+)/delete/$', views.delete_post, name='delete'),
 	url(r'^list/(?P<pk>\d+)/delete/$', views.PostDeleteView.as_view(), name='delete'),
 	url(r'^list/(?P<pk>\d+)/details/(?P<comment_pk>\d+)/replies/$', views.RepliesListView.as_view(), name='replies'),
+	url(r'^get_posts/$', views.get_posts, name='get_posts'),
 
 ]

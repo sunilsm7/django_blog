@@ -15,8 +15,6 @@ from .utils import unique_slug_generator
 # Create your models here.
 
 
-
-
 class Post(models.Model):
 	user 			= models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
 	title 			= models.CharField(max_length=120)
@@ -31,7 +29,7 @@ class Post(models.Model):
 	width_field 	= models.IntegerField(default=0)
 	content 		= models.TextField()
 	draft 			= models.BooleanField(default = False)
-	publish 		= models.DateField(auto_now=False, auto_now_add=False)
+	publish 		= models.DateField(auto_now=False, auto_now_add=True)
 	read_time 		= models.IntegerField(default = 0)
 	views 			= models.PositiveIntegerField(default=0)
 	updated 		= models.DateTimeField(auto_now=True, auto_now_add=False)

@@ -9,6 +9,7 @@ class PostForm(forms.ModelForm):
 		widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Enter post title'}),
             'content': forms.Textarea(attrs={'cols': 80, 'rows': 10, 'placeholder':'What is in your mind?'}),
+            'read_time': forms.NumberInput(attrs={'min':0}),
         }
 
 

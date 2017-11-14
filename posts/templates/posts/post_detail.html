@@ -19,7 +19,7 @@
 
 	<h3>Comments</h3>
 	{% if user.is_authenticated %}
-		<form action="." method="POST"> {% csrf_token %}
+		<form action="." method="POST" id="comment_form"> {% csrf_token %}
 			{% include 'includes/form-snippet.html' %}
 			<button type="submit" class="btn btn-primary btn-comment">Comment</button>
 		</form>
@@ -31,17 +31,17 @@
 		<h5>Latest comments</h5>
 		{% for comment in post.get_comments %}
 			{% if comment.parent == None %}	
-			<div class="card" id="id_comment_{{ comment.id }}">
+			<div class="card">
 			  <div class="card-header comments-header">
-				 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }} Replies: {{ comment.has_children.count }}</small></h6> 
+				 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }} Replies: {{ comment.has_replies.count }}</small></h6> 
 			  </div>
 			  <div class="card-block">
 				<h4 class="card-title"></h4>
 				<p class="card-text">{{ comment.content }}</p>
-					<a href="#" class="btn btn-primary btn-sm" role="button"> Reply </a>
-				   <a href="#" class="btn btn-primary btn-sm" role="button">View Replies</a>
-					
-					<ul class="comment-replies">
+					<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
+					<button  class="btn btn-primary btn-sm button-view-replies" type="button">{{ comment.has_replies.count }} Replies</button> 
+			
+					<ul class="comment-replies mt-2">
 						{% for replies in  comment.has_replies %}
 							<li>replied by: {{ replies.user }} on {{ replies.timestamp }} </br>{{ replies.content }}</li>
 						{% empty %}
@@ -49,7 +49,7 @@
 						{% endfor %}
 					</ul>
 					{% if user.is_authenticated %}
-						<form action="." method="POST" class="form-inline">
+						<form action="." method="POST" class="form-inline form-replies mt-2">
 							{% csrf_token %}
 							{% include 'includes/form-snippet.html' %}
 							 <input type='hidden' name='parent_id' value='{{ comment.id }}'>

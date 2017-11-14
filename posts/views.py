@@ -6,12 +6,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.mail import send_mail
 from django.db.models import Q, F, Count, ExpressionWrapper, IntegerField
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
-
 
 from django.views.generic.edit import (
 	FormView,
@@ -22,9 +23,10 @@ from django.views.generic.edit import (
 from django.urls import reverse_lazy
 
 from .forms import CommentForm, ContactForm, PostForm
+from .mixins import AjaxFormMixin
 from .models import Post, Comment
 
-
+import json
 # Create your views here.
 
 def home(request):
@@ -117,22 +119,33 @@ def delete_post(request, pk):
 	return redirect('posts:list')
 
 
-class ContactView(FormView):
+class ContactView(AjaxFormMixin, FormView):
 	template_name = 'contact.html'
 	form_class = ContactForm
 	success_url = reverse_lazy('home')
 
 	def form_valid(self, form):
-		name = form.cleaned_data['name']
-		subject = form.cleaned_data['subject']
-		email = form.cleaned_data['email']
-		message = form.cleaned_data['message']
-
-		send_mail(subject, message, email, ['admin@example.com'])
-		return super(ContactView, self).form_valid(form)
+		response = super(ContactView, self).form_valid(form)
+		if self.request.is_ajax():
+			
+			name = form.cleaned_data['name']
+			subject = form.cleaned_data['subject']
+			email = form.cleaned_data['email']
+			message = form.cleaned_data['message']
+			send_mail(subject, message, email, ['admin@example.com'])
+			data = {
+				'message': 'Successfully submitted form data.'
+			}
+			return JsonResponse(data)
+		else:
+			return response
 
 	def form_invalid(self, form):
-		return super(ContactView, self).form_invalid(form)
+		response = super(ContactView, self).form_invalid(form)
+		if self.request.is_ajax():
+			return JsonResponse(form.errors, status=400)
+		else:
+			return response
 	
 
 class HomeView(ListView):
@@ -205,41 +218,68 @@ class PostDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
-
-		try:
-			parent_id = self.request.POST.get('parent_id')
-		except:
-			parent_id = None
-		
-		if self.form.is_valid():
-			instance = self.form.save(commit=False)
-			instance.user = self.request.user
-			instance.post = self.object
+		if request.is_ajax():	
+			try:
+				parent_id = self.request.POST.get('parent_id')
+			except:
+				parent_id = None
 			
-			if parent_id is not None:
-				parent = get_object_or_404(Comment, pk=parent_id)
-				instance.parent = parent
-				self.form.save()
-			self.form.save()
-			return redirect(self.object.get_absolute_url())
-		else:
-			return self.render(request)
+			if self.form.is_valid():
+				instance = self.form.save(commit=False)
+				instance.user = self.request.user
+				instance.post = self.object
+				
+				if parent_id is not None:
+					parent = get_object_or_404(Comment, pk=parent_id)
+					instance.parent = parent
+					self.form.save()
+				objects = self.form.save()
+				# response_data = {}
+				# response_data['id'] = objects.id
+				# response_data['user'] = objects.user.username
+				# response_data['content'] = objects.content
+
+				# return redirect(self.object.get_absolute_url())
+				data = {
+					'message': 'Successfully submitted comment data.'
+				}
+				return JsonResponse(data)
+			else:
+				data = {
+					'message': 'errors.'
+				}
+				return JsonResponse(data)
 
 		#return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, AjaxFormMixin, CreateView):
 	model = Post
 	form_class = PostForm
 	template_name = 'posts/new_post.html'
 
 	def form_valid(self, form):
-		form.instance.user = self.request.user
-		form.instance.publish = datetime.datetime.now()
-		return super(PostCreateView, self).form_valid(form)
+		response = super(PostCreateView, self).form_valid(form)
+		if self.request.is_ajax():
+			form.instance.user = self.request.user
+			# form.instance.publish = datetime.datetime.today()
+			post_object = form.save()
+			data = {
+				'message': 'successfully submitted post.',
+			}
+			return JsonResponse(data)
+		else:
+			return response
 
 	def form_invalid(self, form):
-		return super(PostCreateView, self).form_invalid(form)
+		response = super(PostCreateView, self).form_invalid(form)
+		if self.request.is_ajax():
+			data = {
+				'message': 'forms errors.'
+			}
+			return JsonResponse(data, form.errors, status=400)
+		else:
+			return response
 
 	def get_context_data(self, **kwargs):
 		context = super(PostCreateView, self).get_context_data(**kwargs)
@@ -248,7 +288,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 		return context 
 
 
-class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, AjaxFormMixin, UpdateView):
 	model = Post
 	form_class = PostForm
 	permission_required = ('posts.can_change')
@@ -299,6 +339,28 @@ class RepliesListView(ListView):
 		context['comment'] = get_object_or_404(Comment, id=comment_id)
 		context['post_id'] = self.kwargs['pk']
 		return context 
+
+
+def get_posts(request):
+	if request.is_ajax():
+		q = request.GET.get('term', '')
+		queryset = Post.objects.published()
+		posts = queryset.filter(title__icontains=q)
+		# if q is not None:
+		# 	queryset = queryset.search(q)
+		# 	return queryset
+		results = []
+		for post in posts:
+			post_json = {}
+			post_json['id'] = post.id
+			post_json['label'] = post.title
+			post_json['value'] = post.title
+			results.append(post_json)
+		data_json = json.dumps(results)
+	else:
+		data_json = 'fail'
+	return HttpResponse(data_json, content_type='application/json')
+
 
 
 
