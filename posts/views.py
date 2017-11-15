@@ -77,6 +77,7 @@ def post_details(request, pk):
 @login_required
 def new_post(request):
 	title_text = 'New Post'
+	
 	if request.method == 'POST':
 		form = PostForm(request.POST or None)
 		if form.is_valid():
@@ -134,7 +135,7 @@ class ContactView(AjaxFormMixin, FormView):
 			message = form.cleaned_data['message']
 			send_mail(subject, message, email, ['admin@example.com'])
 			data = {
-				'message': 'Successfully submitted form data.'
+				'message': 'Successfully send data. We will revert soon.'
 			}
 			return JsonResponse(data)
 		else:
@@ -234,26 +235,28 @@ class PostDetailView(DetailView):
 					instance.parent = parent
 					self.form.save()
 				objects = self.form.save()
-				# response_data = {}
-				# response_data['id'] = objects.id
-				# response_data['user'] = objects.user.username
-				# response_data['content'] = objects.content
-
+				data = serializers.serialize(
+					'json', [objects,],
+					use_natural_foreign_keys=True,
+					# use_natural_primary_keys=True
+					)
+				response_data = json.loads(data)
+				data = json.dumps(response_data[0])
 				# return redirect(self.object.get_absolute_url())
-				data = {
-					'message': 'Successfully submitted comment data.'
-				}
-				return JsonResponse(data)
+				# data = {
+				# 	'message': 'Successfully submitted comment data.'
+				# }
+				return JsonResponse(data, safe=False)
 			else:
 				data = {
 					'message': 'errors.'
 				}
 				return JsonResponse(data)
 
-		#return render(request, self.template_name, {'form': self.form, 'post':self.object})
+		# return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
 
-class PostCreateView(LoginRequiredMixin, AjaxFormMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
 	model = Post
 	form_class = PostForm
 	template_name = 'posts/new_post.html'
@@ -261,9 +264,10 @@ class PostCreateView(LoginRequiredMixin, AjaxFormMixin, CreateView):
 	def form_valid(self, form):
 		response = super(PostCreateView, self).form_valid(form)
 		if self.request.is_ajax():
-			form.instance.user = self.request.user
-			# form.instance.publish = datetime.datetime.today()
-			post_object = form.save()
+			instance = form.save(commit=False)
+			instance.user = self.request.user
+			instance.publish = datetime.datetime.now()
+			instance.save()
 			data = {
 				'message': 'successfully submitted post.',
 			}

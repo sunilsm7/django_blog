@@ -34,6 +34,8 @@ $(document).ready(function(){
 	    }
 	});
 
+// Sign up form validations
+
 	let $signUpForm = $('#signUpForm');
 	if ($signUpForm.attr("id") === 'signUpForm'){
 
@@ -169,7 +171,7 @@ $(document).ready(function(){
 
 	}
 
-	
+// Contact us form.
 	let $contact_form = $('.contact-form');
 	$contact_form.submit(function(event){
 		event.preventDefault();
@@ -198,6 +200,7 @@ $(document).ready(function(){
 		});
 	});
 
+// New Post and Edit post forms.
 
 	let $new_post_form = $('#new_post_form');
 	$new_post_form.submit(function(event){
@@ -226,6 +229,8 @@ $(document).ready(function(){
 		});
 	});
 
+// Autocomplete for search bar
+
 	// $('#search_posts').change(function(event){
 	// 	window.location.href = '/posts/list/?q=' + $(this).val().trim();
 	// 	console.log(window.location.href);	
@@ -235,9 +240,11 @@ $(document).ready(function(){
       	minLength:3,
       	source: function(req, add){
       		let search = $('#search_posts').val();
+			let form_search_post = $('#form_search_post');
+			let urlEndPoint = form_search_post.attr('data-url');
+			console.log(urlEndPoint);
 	      	$.ajax({
-
-	      		url:'posts/get_posts/',
+	      		url:urlEndPoint,
 	      		dataType: 'json',
 	      		data: {'term':search},
 	      		type: 'GET',
@@ -255,7 +262,7 @@ $(document).ready(function(){
       },
     });
 
-
+// Buttons reply and View Replies hide and show
    $('.button-reply').click(function(e){
    		e.preventDefault();
    		let $this_ = $(this);
@@ -272,20 +279,45 @@ $(document).ready(function(){
    		$($form_replies).toggle();
    });
 
+
+// Comment Form
+
    let $comment_form = $('#comment_form');
 	$comment_form.submit(function(event){
 		event.preventDefault();
 		let $formData =$(this).serialize();
 		let $thisUrl = window.location.href;
-		// let $error_message = $('#error');
+		let $post_comments = $('#post_comments');
 		let $error_message = $(this).find('.error-message');
 		$.ajax({
 			method: "POST",
 			url: $thisUrl,
 			data: $formData,
 			success: function(data, textStatus, jqxhr){
-				$error_message.text(data.message);
-				console.log(data.message);
+				$error_message.text('Successfully posted comment');
+				// $("#post_comments").load(" #post_comments");
+				data = JSON.parse(data);
+			 	console.log(data.fields);
+			 	let timestamp = data.fields['timestamp'];
+			 	let updated = data.fields['updated'];
+				let content = data.fields['content'];
+				let user = data.fields['user'];
+
+				let output = `<div class="card comment-card">
+						<div class="card-header comments-header">
+							<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: 0</small></h6>
+						</div>
+						<div class="card-block">
+							<p class="card-text">${ content } </p>
+							<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
+					<button  class="btn btn-primary btn-sm button-view-replies" type="button">0 Replies</button> 
+						</div>
+					</div>
+				`;
+
+				$post_comments.prepend(output);
+				
+				// console.log(data);
 				console.log(textStatus);
 				console.log(jqxhr);
 				document.querySelector("#comment_form").reset();
@@ -300,27 +332,36 @@ $(document).ready(function(){
 		});
 	});
 
+// form replies on Comment Form
 	let $form_replies = $('.form-replies');
 	$form_replies.submit(function(event){
 		event.preventDefault();
 		let $formData =$(this).serialize();
 		let $thisUrl = window.location.href;
 		let $error_message = $(this).find('.error-message');
-		let json_data = JSON.stringify($formData);
+		let $comment_replies = $(this).prev('.comment-replies');
+		let $no_replies_yet = $comment_replies.find('.no-replies-yet');
 
 		$.ajax({
 			method: "POST",
 			url: $thisUrl,
 			data: $formData,
-			success: function(data, response_data, textStatus, jqxhr){
-				$error_message.text(data_json);
-				console.log(response_data);
-				console.log(textStatus);
-				console.log(jqxhr);
-				document.querySelector('.form-replies').reset();
+			success: function(data, textStatus, jqxhr){
+				data = JSON.parse(data);
+				console.log(data["fields"])
+				$error_message.text('Successfully replied to comment!');
+				let timestamp = data.fields['timestamp'];
+				let content = data.fields['content'];
+				// let user = $('#userMenu').text();
+				let user = data.fields['user']
+
+				$comment_replies.prepend(`<li> replied by: ${user} on:${timestamp} </br> ${content}</li>`);
+				// document.querySelector('.form-replies').reset();
+				$(".form-replies").trigger("reset");
+				$no_replies_yet.hide();
 			},
 			error: function(data, xhr, textStatus, error){
-				console.log(data.message);
+				console.log(data);
 				console.log(xhr);
 				console.log(textStatus);
 				console.log(error);

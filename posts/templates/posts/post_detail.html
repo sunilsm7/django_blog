@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title%} Blog Detail {% endblock %}
 
@@ -14,7 +15,7 @@
 	{% include 'includes/messages.html' %}
 	<h2>{{ post.title }}</h2>
 	<h6 class="text-muted">By: {{ post.user }}.</h6>
-	<h6 class="text-muted">Published on: {{ post.publish }} Last Updated: {{ post.updated }} Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
+	<h6 class="text-muted">Published on: {{ post.publish }}. Last Updated: {{ post.updated|naturaltime }}. Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 	<p>{{ post.get_content_as_markdown }}</p>
 
 	<h3>Comments</h3>
@@ -29,23 +30,24 @@
 
 	<hr>
 		<h5>Latest comments</h5>
+		<div class="container" id="post_comments">
 		{% for comment in post.get_comments %}
 			{% if comment.parent == None %}	
-			<div class="card">
+			<div class="card comment-card">
 			  <div class="card-header comments-header">
-				 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp }} last updated: {{ comment.updated }} Replies: {{ comment.has_replies.count }}</small></h6> 
+				 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp|naturaltime }} last updated: {{ comment.updated|naturaltime }} Replies: {{ comment.has_replies.count }}</small></h6> 
 			  </div>
 			  <div class="card-block">
 				<h4 class="card-title"></h4>
-				<p class="card-text">{{ comment.content }}</p>
+				<p class="card-text">{{ comment.get_content_as_markdown }}</p>
 					<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
 					<button  class="btn btn-primary btn-sm button-view-replies" type="button">{{ comment.has_replies.count }} Replies</button> 
 			
 					<ul class="comment-replies mt-2">
 						{% for replies in  comment.has_replies %}
-							<li>replied by: {{ replies.user }} on {{ replies.timestamp }} </br>{{ replies.content }}</li>
+							<li>replied by: {{ replies.user }} on {{ replies.timestamp|naturaltime }} </br>{{ replies.get_content_as_markdown }}</li>
 						{% empty %}
-							<span class="ml-auto">No replies yet!</span>
+							<span class="ml-auto no-replies-yet">No replies yet!</span>
 						{% endfor %}
 					</ul>
 					{% if user.is_authenticated %}
@@ -64,5 +66,7 @@
 		{% empty %}
 			<span>No Comments yet!</span>
 		{% endfor %}	
+	</div>
+	
 	</div>
 {% endblock %}

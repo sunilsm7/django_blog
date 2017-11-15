@@ -9,7 +9,7 @@ $id_title.addEventListener('input', function (e) {
 
 $id_content.addEventListener('input', function (e) {
 		let $preview_content = document.querySelector('#preview_content');
-		$preview_content.textContent = e.target.value;
+		$preview_content.innerHTML = e.target.value;
 	}, false);
 
 $id_read_time.addEventListener('input', function (e) {
