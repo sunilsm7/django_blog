@@ -12,7 +12,7 @@
   <div class="row">
     <div class="col-lg-6 col-md-8 col-sm-10 offset-2">
     <h2>Register <small>here</small></h2>
-      <form method="post" novalidate id="signUpForm" class="sign-up-form">
+      <form method="post" novalidate id="signUpForm" class="sign-up-form" data-url="{% url 'accounts:validate_username' %}">
         {% csrf_token %}
         {% include 'includes/form-snippet.html' %}
         <button type="submit" class="btn btn-primary btn-block">Sign Up</button>

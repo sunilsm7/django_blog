@@ -1,0 +1,36 @@
+{% load humanize %}
+{% for comment in post.get_comments %}
+	{% if comment.parent == None %}	
+	<div class="card comment-card">
+	  <div class="card-header comments-header">
+		 <h6>By: {{ comment.user }}. <small>on -{{ comment.timestamp|naturaltime }} last updated: {{ comment.updated|naturaltime }} Replies: {{ comment.has_replies.count }}</small></h6> 
+	  </div>
+	  <div class="card-block">
+		<h4 class="card-title"></h4>
+		<p class="card-text">{{ comment.get_content_as_markdown }}</p>
+			<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
+			<button  class="btn btn-primary btn-sm button-view-replies" type="button">{{ comment.has_replies.count }} Replies</button> 
+
+			<ul class="comment-replies mt-2">
+				{% for replies in  comment.has_replies %}
+			  		<li class="">replied by: {{ replies.user }} on {{ replies.timestamp|naturaltime }} </br>{{ replies.get_content_as_markdown }}</li>
+			  	{% empty %}
+					<span class="ml-auto no-replies-yet">No replies yet!</span>
+				{% endfor %}
+			</ul>
+			{% if user.is_authenticated %}
+				<form action="." method="POST" class="form-inline form-replies mt-2">
+					{% csrf_token %}
+					{% include 'includes/form-snippet.html' %}
+					 <input type='hidden' name='parent_id' value='{{ comment.id }}'>
+					<button type="submit" class="btn btn-secondary ml-2 btn-reply">Reply</button>
+				</form>
+			{% else %}
+				<strong><a href="{% url 'accounts:login' %}">Login</a> or <a href="{% url 'accounts:signup' %}">Register</a> to reply.</strong>
+			{% endif %}
+	  </div>
+	</div>
+	{% endif %}
+{% empty %}
+	<span>No Comments yet!</span>
+{% endfor %}

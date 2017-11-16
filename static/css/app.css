@@ -17,5 +17,15 @@
 }
 
 .new-post{
-	border-right: 1px solid grey;
+	/*border: 1px solid grey;*/
 }
+.loading {
+      margin-bottom: 5px;
+      background-color: #1eaedb;
+      color: #fff;
+      text-align: center;
+      padding: 25px 0;
+    }
+    .loading {
+      background-color: #333;
+    }

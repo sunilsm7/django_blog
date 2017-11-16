@@ -12,43 +12,63 @@
 
 <div class="row">
 	<div class="container col-sm-8">
-	<h2>Latest Blogs</h2>
-	{% if user.is_authenticated %}
-		<a href="{% url 'posts:new-post' %}" class="btn btn-primary" role="button">New Post</a>
-	{% endif %}
-	{% for post in posts %}
-		<div class="card">
-		<div class="card-header home-post-header">
-	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title|title }}</a></h4>
-	  	  </div>
+		<h2>Latest Blogs</h2>
+		{% if user.is_authenticated %}
+			<a href="{% url 'posts:new-post' %}" class="btn btn-primary" role="button">New Post</a>
+		{% endif %}
+		<div class="infinite-container">
+		{% for post in posts %}
+			<div class="infinite-item">
+			<div class="card ">
+			<div class="card-header home-post-header">
+		    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title|title }}</a></h4>
+		  	  </div>
 
-		  <div class="card-block">
-		   <!--  <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }} </a></h4>-->
-		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:<a href="{% url 'posts:list' %}?q={{ post.user }}">{{ post.user}}</a>. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
-		    <p class="card-text">
-		    {{ post.get_content_as_markdown|truncatewords:30 }}</p>
+			  <div class="card-block">
+			   <!--  <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }} </a></h4>-->
+			    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }} By:<a href="{% url 'posts:list' %}?q={{ post.user }}">{{ post.user}}</a>. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
+			    <p class="card-text">
+			    {{ post.get_content_as_markdown|truncatewords:30 }}</p>
 
-		    <a href="{{ post.get_absolute_url }}" class="card-link">Read more</a>
+			    <a href="{{ post.get_absolute_url }}" class="card-link">Read more</a>
 
-		    {% if user.is_authenticated and post.user == request.user %}
-		    	<a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Update</a>
-		    	<a class="btn btn-default" href="{% url 'posts:delete' post.id %}" role="button">Delete</a>
-		    {% endif %}
-		    
-		  </div>
+			    {% if user.is_authenticated and post.user == request.user %}
+			    	<a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Update</a>
+			    	<a class="btn btn-default" href="{% url 'posts:delete' post.id %}" role="button">Delete</a>
+			    {% endif %}
+			    
+			  </div>
+			</div>
+			</div>
+		{% endfor %}
 		</div>
-	{% endfor %}
-	<h3><a href="{% url 'posts:list' %}">More Stories</a></h3>
-</div>
+		<div class="loading" style="display: none;">
+    		Loading...
+  		</div>
+  		{% if page_obj.has_next %}
+    		<a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
+  		{% endif %}
+		<!-- <h3><a href="{% url 'posts:list' %}">More Stories</a></h3> -->
+	</div>
 
 <div class="container col-sm-4">
 	{% include 'includes/sidebar.html' %}
-
-	<!-- {% if perms %}
-		<p>{{ perms.user }}You have permission to do something in the django unchaimed </p>
-	{% endif %} -->
 </div>
 
 </div>
 
+{% endblock %}
+	
+{% block javascript %}
+	<script>
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('.loading').show("slow");
+      },
+      onAfterPageLoad: function ($items) {
+        $('.loading').hide("slow");
+      }
+    });
+  </script>
 {% endblock %}

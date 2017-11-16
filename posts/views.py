@@ -12,8 +12,8 @@ from django.core.mail import send_mail
 from django.db.models import Q, F, Count, ExpressionWrapper, IntegerField
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic import ListView, DetailView, TemplateView
-
 from django.views.generic.edit import (
 	FormView,
 	CreateView,
@@ -153,9 +153,10 @@ class HomeView(ListView):
 	model = Post
 	template_name = 'home.html'
 	context_object_name = 'posts'
+	paginate_by = 5
 
 	def get_queryset(self):
-		queryset = Post.objects.filter(draft=False)[:10]
+		queryset = Post.objects.filter(draft=False)
 		return queryset
 
 	def get_context_data(self, **kwargs):
@@ -242,11 +243,13 @@ class PostDetailView(DetailView):
 					)
 				response_data = json.loads(data)
 				data = json.dumps(response_data[0])
-				# return redirect(self.object.get_absolute_url())
-				# data = {
-				# 	'message': 'Successfully submitted comment data.'
-				# }
-				return JsonResponse(data, safe=False)
+				context = {'form':self.form_class()}
+				html_form = render_to_string(
+					'posts/includes/posts_comments.html',
+					context,
+					request=request,
+					)
+				return JsonResponse({'html_form':html_form}, safe=False)
 			else:
 				data = {
 					'message': 'errors.'
@@ -268,10 +271,16 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 			instance.user = self.request.user
 			instance.publish = datetime.datetime.now()
 			instance.save()
-			data = {
+			data_json = {
 				'message': 'successfully submitted post.',
 			}
-			return JsonResponse(data)
+			# data = serializers.serialize(
+			# 		'json', [objects,],
+			# 		use_natural_foreign_keys=True,
+			# 		)
+			# response_data = json.loads(data)
+			# data = json.dumps(response_data[0])
+			return JsonResponse(data_json, safe = False)
 		else:
 			return response
 
