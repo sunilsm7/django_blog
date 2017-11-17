@@ -26,7 +26,7 @@ urlpatterns = [
 	url(r'^accounts/', include('accounts.urls', namespace='accounts')),
 	# url(r'^accounts/', include('allauth.urls')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
-	url(r'^about/$', TemplateView.as_view(template_name="about.html"), name='about'),
+	url(r'^pages/', include('django.contrib.flatpages.urls', namespace='pages')),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),
 	url(r'^admin/', admin.site.urls),
 ]

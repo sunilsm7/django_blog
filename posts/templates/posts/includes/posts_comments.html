@@ -1,5 +1,5 @@
 {% load humanize %}
-{% for comment in post.get_comments %}
+{% for comment in post_comments %}
 	{% if comment.parent == None %}	
 	<div class="card comment-card">
 	  <div class="card-header comments-header">

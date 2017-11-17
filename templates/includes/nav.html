@@ -1,3 +1,6 @@
+{% load flatpages %}
+{% get_flatpages as flatpages %}
+
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <div class="container">
     <a class="navbar-brand" href="/">Django Unchained</a>
@@ -17,7 +20,7 @@
           <a class="nav-link" href="{% url 'contact' %}">Contact us</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'about' %}">About</a>
+          <a class="nav-link" href="{{ flatpages.first.url }}">{{ flatpages.first.title }}</a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0 ml-auto" method="GET" action="{% url 'posts:list' %}" data-url="{% url 'posts:get_posts'%}" id="form_search_post">{% csrf_token %}

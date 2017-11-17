@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 import datetime
+import django_filters
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -26,7 +29,7 @@ from .forms import CommentForm, ContactForm, PostForm
 from .mixins import AjaxFormMixin
 from .models import Post, Comment
 
-import json
+
 # Create your views here.
 
 def home(request):
@@ -147,7 +150,7 @@ class ContactView(AjaxFormMixin, FormView):
 			return JsonResponse(form.errors, status=400)
 		else:
 			return response
-	
+
 
 class HomeView(ListView):
 	model = Post
@@ -158,11 +161,6 @@ class HomeView(ListView):
 	def get_queryset(self):
 		queryset = Post.objects.filter(draft=False)
 		return queryset
-
-	def get_context_data(self, **kwargs):
-		context = super(HomeView, self).get_context_data(**kwargs)
-		context['hello_text'] = 'hello there'
-		return context
 
 
 class PostListView(ListView):
@@ -200,10 +198,10 @@ class PostDetailView(DetailView):
 	context_object_name = 'post'
 	form_class = CommentForm
 
-	def get_context_data(self, **kwargs):
-		context = super(PostDetailView, self).get_context_data(**kwargs)
-		context['test_title'] = 'hello there'
-		return context
+	# def get_context_data(self, **kwargs):
+	# 	context = super(PostDetailView, self).get_context_data(**kwargs)
+	# 	context['post_comments'] = self.object.get_comments()
+	# 	return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = self.get_object()
@@ -215,11 +213,13 @@ class PostDetailView(DetailView):
 			self.object.save()
 			request.session[session_key] = True
 		form = self.form_class()
-		return render(request, self.template_name, {'form': form, 'post':self.object})
+		post_comments = self.object.get_comments
+		return render(request, self.template_name, {'form': form, 'post':self.object, 'post_comments':post_comments})
 
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
+		data = dict()
 		if request.is_ajax():	
 			try:
 				parent_id = self.request.POST.get('parent_id')
@@ -236,24 +236,28 @@ class PostDetailView(DetailView):
 					instance.parent = parent
 					self.form.save()
 				objects = self.form.save()
-				data = serializers.serialize(
+				data_serialized = serializers.serialize(
 					'json', [objects,],
 					use_natural_foreign_keys=True,
 					# use_natural_primary_keys=True
 					)
-				response_data = json.loads(data)
-				data = json.dumps(response_data[0])
-				context = {'form':self.form_class()}
+				response_data = json.loads(data_serialized)
+				data_json = json.dumps(response_data[0])
+				post_comments = self.object.get_comments
+
+				context = {'form':self.form_class(), 'post_comments':post_comments}
+
 				html_form = render_to_string(
 					'posts/includes/posts_comments.html',
 					context,
 					request=request,
 					)
-				return JsonResponse({'html_form':html_form}, safe=False)
+				data['html_form'] = html_form
+				# data['post_comments'] = post_comments
+				data['data_json'] = data_json
+				return JsonResponse(data, safe=False)
 			else:
-				data = {
-					'message': 'errors.'
-				}
+				data['message'] = 'errors'
 				return JsonResponse(data)
 
 		# return render(request, self.template_name, {'form': self.form, 'post':self.object})

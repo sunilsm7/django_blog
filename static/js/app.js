@@ -297,29 +297,9 @@ $(document).ready(function(){
 
 		ajaxCall.done(function(data, textStatus, jqxhr){
 			$error_message.text('Successfully posted comment');
-				// $("#post_comments").load("includes/posts_comments.html #load_comments");
-				//data = JSON.parse(data);
-			 	console.log(data.html_form);
-			 // 	let timestamp = data.fields['timestamp'];
-			 // 	let updated = data.fields['updated'];
-				// let content = data.fields['content'];
-				// let user = data.fields['user'];
-
-				// let output = `<div class="card comment-card">
-				// 		<div class="card-header comments-header">
-				// 			<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: 0</small></h6>
-				// 		</div>
-				// 		<div class="card-block">
-				// 			<p class="card-text">${ content } </p>
-				// 			<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
-				// 	<button  class="btn btn-primary btn-sm button-view-replies" type="button">0 Replies</button> 
-				// 		</div>
-				// 	</div>
-				// `;
-				// $post_comments.html(output);
-				// let comment_card = $('#post_comments').find($('.comment-card'));
-				$('#post_comments').html(data.html_form);
-
+			 	console.log(data);
+			 	var html = $(data.html_form).filter('#post_comments').html();
+                $('#post_comments').html(data.html_form);
 				console.log(textStatus);
 				console.log(jqxhr);
 				document.querySelector("#comment_form").reset();
@@ -350,7 +330,7 @@ $(document).ready(function(){
 		});
 
 		ajaxCall.done(function(data, textStatus, jqxhr){
-			data = JSON.parse(data);
+			data = JSON.parse(data.data_json);
 			console.log(data["fields"])
 			$error_message.text('Successfully replied to comment!');
 			$error_message.fadeOut('slow');
