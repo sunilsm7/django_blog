@@ -131,7 +131,6 @@ class ContactView(AjaxFormMixin, FormView):
 	def form_valid(self, form):
 		response = super(ContactView, self).form_valid(form)
 		if self.request.is_ajax():
-			
 			name = form.cleaned_data['name']
 			subject = form.cleaned_data['subject']
 			email = form.cleaned_data['email']
@@ -170,10 +169,6 @@ class PostListView(ListView):
 	# queryset = Post.objects.filter(draft=False)
 	paginate_by = 10
 
-	# def get_context_data(self, **kwargs):
-	# 	context = super(PostListView, self).get_context_data(**kwargs)
-	# 	context['posts'] = Post.objects.all().order_by('-publish')
-	# 	return context
 
 	def get_queryset(self):
 		queryset = Post.objects.published()
@@ -184,12 +179,6 @@ class PostListView(ListView):
 			return queryset
 
 		return queryset
-
-
-	# def post(self, request, *args, **kwargs):
-	# 	q = self.request.POST.get('q')
-	# 	posts = Post.objects.filter(Q(title__icontains=q))
-	# 	return render(request, self.template_name, {'posts': posts})
 
 
 class PostDetailView(DetailView):
@@ -323,9 +312,6 @@ class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, AjaxFormMixin,
 		context['btn_text'] = 'Update Post'
 		return context
 
-	# def get_success_message(self):
-	# 	return self.success_message('Post Updated Successfully!')
-
 
 class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 	model = Post
@@ -363,9 +349,6 @@ def get_posts(request):
 		q = request.GET.get('term', '')
 		queryset = Post.objects.published()
 		posts = queryset.filter(title__icontains=q)
-		# if q is not None:
-		# 	queryset = queryset.search(q)
-		# 	return queryset
 		results = []
 		for post in posts:
 			post_json = {}

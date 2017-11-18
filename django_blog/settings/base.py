@@ -47,6 +47,8 @@ INSTALLED_APPS = [
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
+	'allauth.socialaccount.providers.google',
+	'allauth.socialaccount.providers.github',
 	'markdown',
 	'widget_tweaks',
 	'django_filters',
@@ -77,7 +79,6 @@ TEMPLATES = [
 				'django.contrib.auth.context_processors.auth',
 				'django.contrib.messages.context_processors.messages',
 				# `allauth` needs this from django
-				'django.template.context_processors.request',
 			],
 		},
 	},
@@ -91,13 +92,13 @@ FIXTURE_DIRS = [
 ]
 
 
-# AUTHENTICATION_BACKENDS = (
-# 	# Needed to login by username in Django admin, regardless of `allauth`
-# 	'django.contrib.auth.backends.ModelBackend',
+AUTHENTICATION_BACKENDS = (
+	# Needed to login by username in Django admin, regardless of `allauth`
+	'django.contrib.auth.backends.ModelBackend',
 
-# 	# `allauth` specific authentication methods, such as login by e-mail
-# 	'allauth.account.auth_backends.AuthenticationBackend',
-# )
+	# `allauth` specific authentication methods, such as login by e-mail
+	'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 
 WSGI_APPLICATION = 'django_blog.wsgi.application'
@@ -149,9 +150,9 @@ USE_TZ = True
 
 
 
-LOGIN_URL = 'accounts:login'
+LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+LOGOUT_REDIRECT_URL = 'account_login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

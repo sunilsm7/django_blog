@@ -23,7 +23,7 @@
 <div class="row">
 <div class="container col-sm-4 offset-2">
 	<h2 id="login_title">Log in</h2>
-	<form method="post" action="{% url 'accounts:login' %}">
+	<form method="post" action="{% url 'account_login' %}">
 	{% csrf_token %}
 		{% include 'includes/form-snippet.html' %}
 
@@ -33,7 +33,7 @@
 
 	{# Assumes you setup the password_reset view in your URLconf #}
 	<p><a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
-	<p>New to Site ? <a href="{% url 'accounts:signup' %}">Register here</a></p>
+	<p>New to Site ? <a href="{{ signup_url }}">Register here</a></p>
 	<p class="text-muted">Login with Social Accounts</p> 
 	<div class="container">
 		<a href="{% provider_login_url 'github' %}" class="btn btn-success btn-github" role="button">GitHuB</a>

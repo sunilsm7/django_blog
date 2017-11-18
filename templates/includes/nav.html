@@ -1,5 +1,6 @@
 {% load flatpages %}
 {% get_flatpages as flatpages %}
+{% load account %}
 
 <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
     <div class="container">
@@ -35,17 +36,17 @@
               {{ user.username|title }}
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
-              <a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a>
-              <a class="dropdown-item" href="{% url 'accounts:password_change' %}">Change password</a>
+              <a class="dropdown-item" href="#">My Profile</a>
+              <a class="dropdown-item" href="{% url 'account_change_password' %}">Change password</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
+              <a class="dropdown-item" href="{% url 'profiles:logout' %}">Log out</a>
             </div>
           </li>
         </ul>
       {% else %}
         <form class="form-inline ml-auto">
-          <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary">Log in</a>
-          <a href="{% url 'accounts:signup' %}" class="btn btn-outline-success ml-2">Sign up</a>
+          <a href="{% url 'account_login' %}" class="btn btn-outline-secondary">Log in</a>
+          <a href="{% url 'account_signup' %}" class="btn btn-outline-success ml-2">Sign up</a>
         </form>
       {% endif %}
     </div>

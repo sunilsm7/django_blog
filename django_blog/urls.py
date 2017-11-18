@@ -23,8 +23,8 @@ from posts import views as post_views
 
 urlpatterns = [
 	url(r'^$', post_views.HomeView.as_view(), name='home'),
-	url(r'^accounts/', include('accounts.urls', namespace='accounts')),
-	# url(r'^accounts/', include('allauth.urls')),
+	url(r'^accounts/', include('allauth.urls')),
+	url(r'^profiles/', include('accounts.urls', namespace='profiles')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
 	url(r'^pages/', include('django.contrib.flatpages.urls', namespace='pages')),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),

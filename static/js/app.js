@@ -133,13 +133,15 @@ $(document).ready(function(){
 			$(error_message).hide();
 		},
 
-		// blur:function(event){
-		// 	if($(this).val() ==='')
-		// 	{
-		// 		$(this).closest('div').find('.error-message').show().text('Please enter email id.');				
-		// 	}	
+		blur:function(event){
+			let $this_ = $(this);
+			let error_message = $this_.closest('div').find('.error-message');
+			if($(this).val() ==='')
+			{
+				error_message.show().text('Please enter email id.');				
+			}	
 			
-		// },
+		},
 
 		});
 
@@ -150,10 +152,10 @@ $(document).ready(function(){
 			let error_message = $this_.closest('div').find('.error-message');
 			if ($this_.val() == '')
 			{
-				$(error_message).show().text('Please enter password');	
+				error_message.show().text('Please enter password');	
 			}
 			else{
-				$(error_message).hide();		
+				error_message.hide();		
 			}	
 		});
 
@@ -163,10 +165,10 @@ $(document).ready(function(){
 			let id_password1 = $('#id_password1').val();
 			let error_message = $this_.closest('div').find('.error-message');
 			if ($this_.val() !== id_password2){
-				$(error_message).show().text('password\'s are not matched.');
+				error_message.show().text('password\'s are not matched.');
 			}
 			else{
-				$(error_message).hide();	
+				error_message.hide();	
 			}		
 		});
 
