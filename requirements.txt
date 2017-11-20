@@ -3,3 +3,5 @@ django-widget-tweaks==1.4.1
 Pillow==4.2.1
 Markdown==2.6.9
 django-allauth==0.34.0
+django-filter==1.1.0
+djangorestframework==3.7.3

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 	'allauth.socialaccount.providers.github',
+	'rest_framework',
 	'markdown',
 	'widget_tweaks',
 	'django_filters',
@@ -184,3 +185,9 @@ MESSAGE_LEVEL = message_constants.DEBUG
 SITE_ID = 5
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}

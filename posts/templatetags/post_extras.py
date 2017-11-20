@@ -32,6 +32,6 @@ def most_commented_posts():
 
 @register.inclusion_tag('posts/includes/posts_count_by_user_list.html')
 def most_posts_by_user():
-	posts_objects = User.objects.annotate(num_posts=Count('post'))
+	posts_objects = User.objects.annotate(num_posts=Count('posts'))
 	user_list = posts_objects.order_by('-num_posts')[:5]
 	return {'user_list':user_list}
