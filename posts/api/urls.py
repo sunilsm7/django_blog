@@ -2,7 +2,7 @@ from django.conf.urls import url
 from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
-from posts.api.views import UserViewSet, PostViewSet, api_root
+# from posts.api.views import UserViewSet, PostViewSet, api_root
 
 
 # post_list = PostViewSet.as_view({
@@ -25,12 +25,18 @@ from posts.api.views import UserViewSet, PostViewSet, api_root
 # 	'get':'retrieve'
 # 	})
 
-# urlpatterns = [
-# 	url(r'^$', api_root),
-# 	url(r'^posts/$', post_list, name='post-list'),
-# 	url(r'^posts/(?P<pk>[0-9]+)/detail/$', post_detail, name='post-detail'),
-# 	url(r'^users/$', user_list, name = 'user-list'),
-# 	url(r'^users/(?P<pk>[0-9])+/$', user_detail, name = 'user-detail'),
-# ]
+urlpatterns = [
+	url(r'^$', views.PostListAPIView.as_view(), name='post-list'),
+	url(r'^create/$', views.PostCreateAPIView.as_view(), name='post-create'),
+	#url(r'^posts/(?P<slug>[\w-]+)/detail/$', views.PostDetailAPIView.as_view(), name='post-detail'),
+	url(r'^(?P<pk>[0-9]+)/$', views.PostDetailAPIView.as_view(), name='post-detail'),	
+	url(r'^(?P<pk>[0-9]+)/update/$', views.PostUpdateAPIView.as_view(), name='post-update'),
+	url(r'^(?P<pk>[0-9]+)/delete/$', views.PostDeleteAPIView.as_view(), name='post-delete'),
+	url(r'^comments/$', views.CommentListAPIView.as_view(), name='comment-list'),
+	url(r'^comments/create/$', views.CommentCreateAPIView.as_view(), name='comment-create'),
+	url(r'^comments/(?P<pk>[0-9]+)/detail/$', views.CommentDetailAPIView.as_view(), name='comment-detail'),
+	url(r'^comments/(?P<pk>[0-9]+)/update/$', views.CommentUpdateAPIView.as_view(), name='comment-update'),
+	url(r'^comments/(?P<pk>[0-9]+)/delete/$', views.CommentDeleteAPIView.as_view(), name='comment-delete'),
+]
 
-# urlpatterns = format_suffix_patterns(urlpatterns)
+urlpatterns = format_suffix_patterns(urlpatterns)

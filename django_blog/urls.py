@@ -23,18 +23,20 @@ from posts import views as post_views
 from rest_framework.routers import DefaultRouter
 
 # Create a router and register our viewsets with it.
-router = DefaultRouter()
-router.register(r'posts', api_views.PostViewSet)
-router.register(r'users', api_views.UserViewSet)
-router.register(r'comment', api_views.CommentViewSet)
+# router = DefaultRouter()
+# router.register(r'posts', api_views.PostViewSet)
+# router.register(r'users', api_views.UserViewSet)
+# router.register(r'comment', api_views.CommentViewSet)
 
 urlpatterns = [
 	url(r'^$', post_views.HomeView.as_view(), name='home'),
 	url(r'^accounts/', include('allauth.urls')),
 	url(r'^profiles/', include('accounts.urls', namespace='profiles')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
-	# url(r'^posts-api/', include('posts.api.urls', namespace='posts-api')),
-	url(r'^posts-api/', include(router.urls)),
+	url(r'^api/$', api_views.api_root),
+	url(r'^api/posts/', include('posts.api.urls', namespace='posts-api')),
+	url(r'^api/users/', include('accounts.api.urls', namespace='users-api')),
+	#url(r'^posts-api/', include(router.urls)),
 	url(r'^pages/', include('django.contrib.flatpages.urls', namespace='pages')),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),
 	url(r'^admin/', admin.site.urls),
