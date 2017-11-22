@@ -2,6 +2,51 @@ $(document).ready(function(){
 	$('.form-replies').hide();
 	$('.comment-replies').hide();
 
+	let $api_post_detail_url = $("#comment_form").attr('data-api_post_detail_url');
+	let $post_comment_list = function(api_post_detail_url){
+		let $post_comments = $('#post_comments');
+		console.log(api_post_detail_url);
+		$.getJSON(api_post_detail_url, function(data) {	
+			comment_list = data.results
+			let items = []
+			if (comment_list == 0){
+				$post_comments.html("<strong> No comments yet.</strong>");
+			}
+			else{
+				$.each(comment_list, function(key, val){
+					let timestamp = comment_list[key]['timestamp'];
+					let updated = comment_list[key]['updated'];
+					let content = comment_list[key]['content'];
+					let user = comment_list[key]['user'];
+					let replies = comment_list[key]['replies_count'];
+
+					let output = `<div class="card comment-card">
+							<div class="card-header comments-header">
+								<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: ${replies}</small></h6>
+							</div>
+							<div class="card-block">
+								<p class="card-text">${ content } </p>
+								<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
+						<button  class="btn btn-primary btn-sm button-view-replies" type="button">0 Replies</button> 
+						<ul class="comment-replies mt-2">
+
+						</ul>
+							</div>
+						</div>
+					`;
+					// output.appendTo($post_comments);
+					items.push(output);
+				});	 
+				$post_comments.html(items);
+			}
+
+			 
+		});
+	};
+
+
+	$post_comment_list($api_post_detail_url);
+
 	console.log('app.js loaded');
 		// using jQuery
 	function getCookie(name) {
@@ -283,14 +328,16 @@ $(document).ready(function(){
 
 // Comment Form
 
+
+
    let $comment_form = $('#comment_form');
 	$comment_form.submit(function(event){
 		event.preventDefault();
 		let $formData =$(this).serialize();
 		let $thisUrl = window.location.href;
 		let $post_comments = $('#post_comments');
+		let $api_post_detail_url = $(this).attr('data-api_post_detail_url');
 		let $error_message = $(this).find('.error-message');
-
 		let ajaxCall = $.ajax({
 			method: "POST",
 			url: $thisUrl,
@@ -299,9 +346,11 @@ $(document).ready(function(){
 
 		ajaxCall.done(function(data, textStatus, jqxhr){
 			$error_message.text('Successfully posted comment');
-			 	console.log(data);
-			 	var html = $(data.html_form).filter('#post_comments').html();
-                $('#post_comments').html(data.html_form);
+			 	// var html = $(data.html_form).filter('#post_comments').html();
+			 	//$('#post_comments').html(data.html_form);
+                
+                $post_comment_list($api_post_detail_url);
+
 				console.log(textStatus);
 				console.log(jqxhr);
 				document.querySelector("#comment_form").reset();
@@ -314,6 +363,8 @@ $(document).ready(function(){
 		});
 
 	});
+
+
 
 // form replies on Comment Form
 	let $form_replies = $('.form-replies');

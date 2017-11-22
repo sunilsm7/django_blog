@@ -1,10 +1,9 @@
 import datetime
-from django.http import Http404, HttpResponse, JsonResponse
-from rest_framework import status
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import permissions
 from rest_framework import renderers
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,6 +11,9 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import Http404, HttpResponse, JsonResponse
+
 from posts.models import Post, Comment
 from .serializers import (
 	CommentSerializer,
@@ -20,8 +22,6 @@ from .serializers import (
 	PostCreateUpdateSerializer,
 	PostDetailSerializer,
 	PostListSerializer, 
-
-	PostSerializer,
 	)
 from .permissions import IsOwnerOrReadOnly
 
@@ -33,28 +33,6 @@ def api_root(request, format=None):
 		'comments' : reverse('posts-api:comment-list', request=request, format=format),
 		'users' : reverse('users-api:user-list', request=request, format=format)
 		})
-
-
-# viewsets
-
-
-class PostViewSet(viewsets.ModelViewSet):
-	"""
-	This viewset automatically provides list, create, retrieve,
-	update and destroy actions.
-	"""
-	queryset = Post.objects.all()
-	serializer_class = PostSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
-
-	def perform_create(self, serializer):
-		serializer.save(user=self.request.user)
-
-
-class CommentViewSet(viewsets.ModelViewSet):
-	queryset = Post.objects.all()
-	serializer_class = CommentSerializer
-	permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
 
 
 
@@ -80,8 +58,26 @@ class CommentDetailAPIView(generics.RetrieveAPIView):
 
 
 class CommentListAPIView(generics.ListAPIView):
-	queryset = Comment.objects.all()
+	# queryset = Comment.objects.all()
 	serializer_class = CommentSerializer
+
+	def get_queryset(self):
+		queryset = Comment.objects.filter(parent=None)
+		post_id =self.kwargs['post_id']
+		if post_id is not None:
+			queryset = Comment.objects.filter(
+				Q(parent=None),
+				Q(post=post_id)
+				)
+		return queryset
+
+
+class CommentRepliesListAPIView(generics.ListAPIView):
+	serializer_class = CommentSerializer
+
+	def get_queryset(self):
+		queryset = Comment.objects.filter(parent!=None)
+		return queryset
 
 
 class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -117,8 +113,14 @@ class PostDetailAPIView(generics.RetrieveAPIView):
 	
 
 class PostListAPIView(generics.ListAPIView):
-	queryset = Post.objects.published()
 	serializer_class = PostListSerializer
+
+	def get_queryset(self):
+		queryset = Post.objects.published()
+		query = self.request.query_params.get('q', None)
+		if query is not None:
+			queryset = Post.objects.search(query)
+		return queryset
 
 
 class PostUpdateAPIView(generics.RetrieveUpdateAPIView):

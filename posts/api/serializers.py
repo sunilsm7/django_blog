@@ -10,14 +10,6 @@ from rest_framework.serializers import (
 
 from posts.models import Post, Comment
 
-
-class PostSerializer(ModelSerializer):
-	user = serializers.ReadOnlyField(source='user.username')
-	class Meta:
-		model 	= Post
-		fields 	= ('user','title','slug','content','draft','publish','read_time','views')
-
-
 # new serializers
 class CommentCreateUpdateSerializer(ModelSerializer):
 	class Meta:
@@ -32,6 +24,8 @@ comment_detail_url = HyperlinkedIdentityField(
 class CommentSerializer(ModelSerializer):
 	url = comment_detail_url
 	replies_count = serializers.SerializerMethodField()
+	user = serializers.SerializerMethodField()
+
 	class Meta:
 		model 	= Comment
 		fields 	= ('url','id', 'user','post','parent','content','updated', 'timestamp','replies_count')
@@ -40,6 +34,10 @@ class CommentSerializer(ModelSerializer):
 	def get_replies_count(self, obj):
 		count = obj.has_replies().count()
 		return count
+
+	def get_user(self, obj):
+		return obj.user.username
+
 
 
 class CommentDetailSerializer(ModelSerializer):
@@ -87,6 +85,7 @@ class PostDetailSerializer(ModelSerializer):
 	html = serializers.SerializerMethodField()
 	comment_count = serializers.SerializerMethodField()
 	url = post_detail_url
+	user = serializers.SerializerMethodField()
 	class Meta:
 		model = Post
 		fields = [
@@ -118,6 +117,9 @@ class PostDetailSerializer(ModelSerializer):
 
 	def get_html(self, obj):
 		return obj.get_content_as_markdown()
+
+	def get_user(self, obj):
+		return obj.user.username
 
 class PostListSerializer(ModelSerializer):
 	comments_count = serializers.SerializerMethodField()

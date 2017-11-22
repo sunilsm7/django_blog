@@ -2,6 +2,7 @@ import datetime
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import viewsets
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -22,13 +23,17 @@ class UserCreateAPIView(generics.CreateAPIView):
 	def perform_create(self, serializer):
 		serializer.save()
 
+# class UserDeleteAPIView(generics.RetrieveDestroyAPIView):
+# 	queryset = User.objects.all()
+# 	serializer_class = UserDetailSerializer
+# 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly)
 
-class UserDetail(generics.RetrieveAPIView):
+class UserDetailAPIView(generics.RetrieveAPIView):
 	queryset = User.objects.all()
 	serializer_class = UserDetailSerializer
 
 
-class UserList(generics.ListAPIView):
+class UserListAPIView(generics.ListAPIView):
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
 

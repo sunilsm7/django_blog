@@ -53,7 +53,6 @@ def posts_list(request):
 	return render(request, 'posts/post_list.html', {'posts': posts})
 
 
-
 def post_details(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 	session_key = 'viewed_post_{}'.format(post.pk)
@@ -169,15 +168,12 @@ class PostListView(ListView):
 	# queryset = Post.objects.filter(draft=False)
 	paginate_by = 10
 
-
 	def get_queryset(self):
 		queryset = Post.objects.published()
 		q = self.request.GET.get('q')
-
 		if q is not None:
 			queryset = queryset.search(q)
 			return queryset
-
 		return queryset
 
 
