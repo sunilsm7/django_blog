@@ -60,15 +60,20 @@ class CommentDetailAPIView(generics.RetrieveAPIView):
 class CommentListAPIView(generics.ListAPIView):
 	# queryset = Comment.objects.all()
 	serializer_class = CommentSerializer
+	permission_classes = (permissions.AllowAny,)
 
 	def get_queryset(self):
 		queryset = Comment.objects.filter(parent=None)
-		post_id =self.kwargs['post_id']
-		if post_id is not None:
-			queryset = Comment.objects.filter(
-				Q(parent=None),
-				Q(post=post_id)
-				)
+		try:
+			post_id = self.kwargs['post_id']
+			if post_id is not None:
+				queryset = Comment.objects.filter(
+					Q(parent=None),
+					Q(post=post_id)
+					)
+				return queryset
+		except:
+			pass
 		return queryset
 
 
@@ -114,7 +119,8 @@ class PostDetailAPIView(generics.RetrieveAPIView):
 
 class PostListAPIView(generics.ListAPIView):
 	serializer_class = PostListSerializer
-
+	permission_classes = (permissions.AllowAny,)
+	
 	def get_queryset(self):
 		queryset = Post.objects.published()
 		query = self.request.query_params.get('q', None)

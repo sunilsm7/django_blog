@@ -1,54 +1,9 @@
 $(document).ready(function(){
-	$('.form-replies').hide();
-	$('.comment-replies').hide();
-
-	let $api_post_detail_url = $("#comment_form").attr('data-api_post_detail_url');
-	let $post_comment_list = function(api_post_detail_url){
-		let $post_comments = $('#post_comments');
-		console.log(api_post_detail_url);
-		$.getJSON(api_post_detail_url, function(data) {	
-			comment_list = data.results
-			let items = []
-			if (comment_list == 0){
-				$post_comments.html("<strong> No comments yet.</strong>");
-			}
-			else{
-				$.each(comment_list, function(key, val){
-					let timestamp = comment_list[key]['timestamp'];
-					let updated = comment_list[key]['updated'];
-					let content = comment_list[key]['content'];
-					let user = comment_list[key]['user'];
-					let replies = comment_list[key]['replies_count'];
-
-					let output = `<div class="card comment-card">
-							<div class="card-header comments-header">
-								<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: ${replies}</small></h6>
-							</div>
-							<div class="card-block">
-								<p class="card-text">${ content } </p>
-								<button  class="btn btn-primary btn-sm button-reply" type="button">Reply</button> 
-						<button  class="btn btn-primary btn-sm button-view-replies" type="button">0 Replies</button> 
-						<ul class="comment-replies mt-2">
-
-						</ul>
-							</div>
-						</div>
-					`;
-					// output.appendTo($post_comments);
-					items.push(output);
-				});	 
-				$post_comments.html(items);
-			}
-
-			 
-		});
-	};
-
-
-	$post_comment_list($api_post_detail_url);
-
+	// $('.comment-replies').hide();
 	console.log('app.js loaded');
-		// using jQuery
+	// $('.comment-replies').hide();
+
+	// using jQuery
 	function getCookie(name) {
 	    var cookieValue = null;
 	    if (document.cookie && document.cookie !== '') {
@@ -78,6 +33,94 @@ $(document).ready(function(){
 	        }
 	    }
 	});
+
+
+
+
+	let $api_post_comments_list_url = $("#post_title_id").attr('data-api_post_comments_list_url');
+	let $post_comment_list = function(api_post_comments_list_url){
+		let $post_comments = $('#post_comments');
+		console.log($api_post_comments_list_url);
+		$.getJSON(api_post_comments_list_url, function(data) {	
+			comment_list = data.results
+			let items = []
+			if (comment_list == 0){
+				$post_comments.html("<strong> No comments yet.</strong>");
+			}
+			else{
+				$.each(comment_list, function(key, val){
+					let timestamp = comment_list[key]['timestamp'];
+					let updated = comment_list[key]['updated'];
+					let content = comment_list[key]['content'];
+					let user = comment_list[key]['user'];
+					let replies = comment_list[key]['replies_count'];
+					let comment_id = comment_list[key]['id'];
+
+					let output = `<div class="card comment-card">
+							<div class="card-header comments-header">
+								<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: ${replies}</small></h6>
+							</div>
+							<div class="card-block">
+								<p class="card-text">${ content } </p>
+								<button  class="btn btn-primary btn-sm button-reply comment-reply" data-toggle="modal" data-target="#replyModal" type="button" data-parent_id="${comment_id}">Reply</button> 
+								<button  class="btn btn-primary btn-sm button-view-replies" type="button" data-comment_parent_id = ${ comment_id } data-comment_detail_url="/api/posts/comments/${comment_id}/detail/">View Replies</button> 
+								<ul class="comment-replies mt-2">
+								</ul>
+							</div>
+						</div>
+					`;
+					// output.appendTo($post_comments);
+					items.push(output);
+				});	 
+				$post_comments.html(items);
+			}
+			 
+		});
+	};
+
+	// $post_comment_list($api_post_comments_list_url);
+
+	let $api_post_detail_url = $("#post_title_id").attr('data-api_post_detail_url');
+	let $post_single_comment = function(api_post_detail_url){
+		let $post_comments = $('#post_comments');
+		var items = []
+
+		$.getJSON(api_post_detail_url, function(data){
+			comment_list = data.comments;
+			$.each(comment_list, function(key, val){
+				if (comment_list[key].parent == null){
+					let timestamp = comment_list[key]['timestamp'];
+					let updated = comment_list[key]['updated'];
+					let content = comment_list[key]['content'];
+					let user = comment_list[key]['user'];
+					let replies = comment_list[key]['replies_count'];
+					let comment_id = comment_list[key]['id'];
+
+					let output = `<div class="card comment-card">
+							<div class="card-header comments-header">
+								<h6>By:${user}. <small>on: ${ timestamp }. Last Updated: ${ updated } Replies: ${replies}</small></h6>
+							</div>
+							<div class="card-block">
+								<p class="card-text" data-user="${ user }">${ content } </p>
+								<button  class="btn btn-primary btn-sm button-reply comment-reply" data-toggle="modal" data-target="#replyModal" type="button" data-parent_id="${comment_id}">Reply</button> 
+								<button  class="btn btn-primary btn-sm button-view-replies" type="button" data-comment_parent_id = ${ comment_id } data-comment_detail_url="/api/posts/comments/${comment_id}/detail/">View Replies</button> 
+								<ul class="comment-replies mt-2">
+								</ul>
+							</div>
+						</div>
+					`;
+					items.push(output);			
+				}
+				
+			});
+			return $post_comments.prepend(items);
+			
+		});
+		
+	};
+
+$post_single_comment($api_post_detail_url);
+
 
 // Sign up form validations
 
@@ -119,8 +162,7 @@ $(document).ready(function(){
 		blur:function(event){
 			let $this_ = $(this);
 			let error_message = $this_.closest('div').find('.error-message');
-			if($(this).val() === '')
-			{
+			if($(this).val() === ''){
 				$(error_message).show().text('Please enter username id.');
 			}
 			
@@ -181,22 +223,16 @@ $(document).ready(function(){
 		blur:function(event){
 			let $this_ = $(this);
 			let error_message = $this_.closest('div').find('.error-message');
-			if($(this).val() ==='')
-			{
+			if($(this).val() ===''){
 				error_message.show().text('Please enter email id.');				
 			}	
-			
 		},
-
 		});
-
-	
 
 		$('#id_password1').change(function(event){
 			let $this_ = $(this);
 			let error_message = $this_.closest('div').find('.error-message');
-			if ($this_.val() == '')
-			{
+			if ($this_.val() == ''){
 				error_message.show().text('Please enter password');	
 			}
 			else{
@@ -246,34 +282,6 @@ $(document).ready(function(){
 		});
 	});
 
-// New Post and Edit post forms.
-
-	let $new_post_form = $('#new_post_form');
-	$new_post_form.submit(function(event){
-		event.preventDefault();
-		let $formData =$(this).serialize();
-		let $thisUrl = window.location.href;
-		let $error_message = $('#error');
-		$.ajax({
-			method: "POST",
-			url: $thisUrl,
-			data: $formData,
-			success: function(data_json, textStatus, jqxhr){
-				$error_message.text(data_json.message);
-				console.log(data_json);
-				console.log(textStatus);
-				console.log(jqxhr);
-				document.querySelector("#new_post_form").reset();
-			},
-			error: function(data_json, xhr, status, error){
-				console.log(data_json);
-				console.log(xhr);
-				console.log(status);
-				console.log(error);
-			},
-
-		});
-	});
 
 // Autocomplete for search bar
 
@@ -308,55 +316,38 @@ $(document).ready(function(){
       },
     });
 
-// Buttons reply and View Replies hide and show
-   $('.button-reply').click(function(e){
-   		e.preventDefault();
-   		let $this_ = $(this);
-   		let $form_replies = $this_.closest('div').find('.form-replies');
-   		$($form_replies).toggle();
-   });
-
-   $('.button-view-replies').click(function(e){
-   		e.preventDefault();
-   		let $this_ = $(this);
-   		let $form_replies = $this_.closest('div').find('.form-replies');
-   		let $comment_replies = $this_.closest('div').find('.comment-replies');
-   		$($comment_replies).toggle();
-   		$($form_replies).toggle();
-   });
-
+  
 
 // Comment Form
-
-
-
    let $comment_form = $('#comment_form');
 	$comment_form.submit(function(event){
 		event.preventDefault();
 		let $formData =$(this).serialize();
-		let $thisUrl = window.location.href;
 		let $post_comments = $('#post_comments');
-		let $api_post_detail_url = $(this).attr('data-api_post_detail_url');
+		let $api_post_comments_list_url = $("#post_title_id").attr('data-api_post_comments_list_url');
+		let $api_post_detail_url = $("#post_title_id").attr('data-api_post_detail_url');
+		let urlEndPoint = $(this).attr('data-comment_post_url');
+		console.log
 		let $error_message = $(this).find('.error-message');
 		let ajaxCall = $.ajax({
 			method: "POST",
-			url: $thisUrl,
+			url: urlEndPoint,
 			data: $formData,
 		 });
 
 		ajaxCall.done(function(data, textStatus, jqxhr){
 			$error_message.text('Successfully posted comment');
-			 	// var html = $(data.html_form).filter('#post_comments').html();
-			 	//$('#post_comments').html(data.html_form);
+                $post_single_comment($api_post_detail_url);
                 
-                $post_comment_list($api_post_detail_url);
-
+                
+                // console.log(data.message)
 				console.log(textStatus);
 				console.log(jqxhr);
 				document.querySelector("#comment_form").reset();
 		});
 
-		ajaxCall.fail(function(jqXHR, textStatus, errorThrown){
+		ajaxCall.fail(function(data, jqXHR, textStatus, errorThrown){
+			console.log(data.message);
 			console.log(xhr);
 			console.log(status);
 			console.log(error);
@@ -364,6 +355,53 @@ $(document).ready(function(){
 
 	});
 
+// button view replies
+ $(document.body).on("click", ".button-view-replies", function(e){
+   		e.preventDefault();
+   		let $this_ = $(this);
+   		let comment_detail_url = $this_.attr('data-comment_detail_url');
+   		let $replies_list_ul = $this_.next('.comment-replies');
+   		$view_btn_replies_text = $this_.text();
+
+   		if ($this_.text() == 'View Replies'){
+
+   			$this_.text('Hide Replies');
+   			$replies_list_ul.show();
+
+   			$.getJSON(comment_detail_url, function(data) {
+   			let replies_list = data.replies;
+   			var items = [];
+	   			if (replies_list == 0){
+	   				$replies_list_ul.html('<strong> no replies yet!.</strong>');
+	   			}
+	   			else{
+	   				$.each(replies_list, function(key, val) {
+		   				let content = replies_list[key].content;
+		   				let user = replies_list[key].user;
+		   				let timestamp = replies_list[key].timestamp;
+		   				let output = `<li> replied by: ${user} on:${timestamp} </br> content: ${content}</li>`;
+		   				items.push(output);
+	   				});
+	   				$replies_list_ul.html(items);
+	   			}
+	   		});
+   		}
+   		else{
+   			$this_.text('View Replies');
+   			$replies_list_ul.hide('slow');
+   		}
+   });
+
+
+// reply button
+$(document.body).on("click", ".comment-reply", function(event){
+		event.preventDefault();
+		let $this_ = $(this);
+		let comment_text = $this_.prev('p').attr('data-user');
+		$("#replyModal #comment_text_content").text(comment_text);
+    	let parentId = $this_.attr("data-parent_id")
+		$("#replyModal textarea").after("<input type='hidden' value='" + parentId + "' name='parent_id' />")
+	});
 
 
 // form replies on Comment Form
@@ -371,32 +409,23 @@ $(document).ready(function(){
 	$form_replies.submit(function(event){
 		event.preventDefault();
 		let $formData =$(this).serialize();
-		let $thisUrl = window.location.href;
+		let urlEndPoint = $(this).attr('data-comment_post_url');
+		// let $thisUrl = window.location.href;
+
 		let $error_message = $(this).find('.error-message');
-		let $comment_replies = $(this).prev('.comment-replies');
-		let $no_replies_yet = $comment_replies.find('.no-replies-yet');
 
 		let ajaxCall = $.ajax({
 			method: "POST",
-			url: $thisUrl,
+			url: urlEndPoint,
 			data: $formData,
 		});
 
 		ajaxCall.done(function(data, textStatus, jqxhr){
-			data = JSON.parse(data.data_json);
-			console.log(data["fields"])
-			$error_message.text('Successfully replied to comment!');
-			$error_message.fadeOut('slow');
-			let timestamp = data.fields['timestamp'];
-			let content = data.fields['content'];
-			// let user = $('#userMenu').text();
-			let user = data.fields['user']
-
-			$comment_replies.prepend(`<li> replied by: ${user} on:${timestamp} </br> ${content}</li>`);
+			console.log(data)
+			$error_message.text('Successfully replied to comment!').fadeOut('slow');
 			// document.querySelector('.form-replies').reset();
+			$('#replyModal').modal('hide');
 			$(".form-replies").trigger("reset");
-			$no_replies_yet.hide();
-
 		});
 
 		ajaxCall.fail(function(xhr, textStatus, error){

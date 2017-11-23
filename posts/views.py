@@ -183,10 +183,10 @@ class PostDetailView(DetailView):
 	context_object_name = 'post'
 	form_class = CommentForm
 
-	# def get_context_data(self, **kwargs):
-	# 	context = super(PostDetailView, self).get_context_data(**kwargs)
-	# 	context['post_comments'] = self.object.get_comments()
-	# 	return context
+	def get_context_data(self, **kwargs):
+		context = super(PostDetailView, self).get_context_data(**kwargs)
+		context['modal_title'] = 'Comment Reply'
+		return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = self.get_object()
@@ -205,7 +205,7 @@ class PostDetailView(DetailView):
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
 		data = dict()
-		if request.is_ajax():	
+		if request.is_ajax() and request.method == 'POST':	
 			try:
 				parent_id = self.request.POST.get('parent_id')
 			except:
@@ -221,31 +221,11 @@ class PostDetailView(DetailView):
 					instance.parent = parent
 					self.form.save()
 				objects = self.form.save()
-				data_serialized = serializers.serialize(
-					'json', [objects,],
-					use_natural_foreign_keys=True,
-					# use_natural_primary_keys=True
-					)
-				response_data = json.loads(data_serialized)
-				data_json = json.dumps(response_data[0])
-				post_comments = self.object.get_comments
-
-				context = {'form':self.form_class(), 'post_comments':post_comments}
-
-				html_form = render_to_string(
-					'posts/includes/posts_comments.html',
-					context,
-					request=request,
-					)
-				data['html_form'] = html_form
-				# data['post_comments'] = post_comments
-				data['data_json'] = data_json
+				data['message'] = 'success'
 				return JsonResponse(data, safe=False)
 			else:
 				data['message'] = 'errors'
 				return JsonResponse(data)
-
-		# return render(request, self.template_name, {'form': self.form, 'post':self.object})
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -254,35 +234,15 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 	template_name = 'posts/new_post.html'
 
 	def form_valid(self, form):
-		response = super(PostCreateView, self).form_valid(form)
-		if self.request.is_ajax():
-			instance = form.save(commit=False)
-			instance.user = self.request.user
-			instance.publish = datetime.datetime.now()
-			instance.save()
-			data_json = {
-				'message': 'successfully submitted post.',
-			}
-			# data = serializers.serialize(
-			# 		'json', [objects,],
-			# 		use_natural_foreign_keys=True,
-			# 		)
-			# response_data = json.loads(data)
-			# data = json.dumps(response_data[0])
-			return JsonResponse(data_json, safe = False)
-		else:
-			return response
-
+		instance = form.save(commit=False)
+		instance.user = self.request.user
+		instance.publish = datetime.datetime.now()
+		instance.save()
+		return super(PostCreateView, self).form_valid(form)
+		
 	def form_invalid(self, form):
-		response = super(PostCreateView, self).form_invalid(form)
-		if self.request.is_ajax():
-			data = {
-				'message': 'forms errors.'
-			}
-			return JsonResponse(data, form.errors, status=400)
-		else:
-			return response
-
+		return super(PostCreateView, self).form_invalid(form)
+		
 	def get_context_data(self, **kwargs):
 		context = super(PostCreateView, self).get_context_data(**kwargs)
 		context['title_text'] = 'New Post'
@@ -290,7 +250,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 		return context 
 
 
-class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, AjaxFormMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 	model = Post
 	form_class = PostForm
 	permission_required = ('posts.can_change')

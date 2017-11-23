@@ -123,6 +123,7 @@ class PostDetailSerializer(ModelSerializer):
 
 class PostListSerializer(ModelSerializer):
 	comments_count = serializers.SerializerMethodField()
+	user = serializers.SerializerMethodField()
 	url = post_detail_url
 	class Meta:
 		model = Post
@@ -131,4 +132,7 @@ class PostListSerializer(ModelSerializer):
 	def get_comments_count(self, obj):
 		count = obj.get_comments.count()
 		return count
+
+	def get_user(self, obj):
+		return obj.user.username
 		

@@ -12,15 +12,14 @@
 {% block content %}
 
 <div class="container">
-	{% include 'includes/messages.html' %}
 	<h2>{{ post.title }}</h2>
-	<h6 class="text-muted" data-post_id="{{ post.id }}" id="post_title_id">By: {{ post.user }}.</h6>
+	<h6 class="text-muted" data-post_id="{{ post.id }}" id="post_title_id" data-api_post_comments_list_url="{% url 'posts-api:post-comment-list' post.id  %}" data-api_post_detail_url="{% url 'posts-api:post-detail' post.id %}">By: {{ post.user }}.</h6>
 	<h6 class="text-muted">Published on: {{ post.publish }}. Last Updated: {{ post.updated|naturaltime }}. Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 	<p>{{ post.get_content_as_markdown }}</p>
 
 	<h3>Comments</h3>
 	{% if user.is_authenticated %}
-		<form action="." method="POST" id="comment_form" data-api_post_detail_url="{% url 'posts-api:post-comment-list' post.id  %}"> {% csrf_token %}
+		<form action="." method="POST" id="comment_form" data-comment_post_url="{% url 'posts:details' post.id %}"> {% csrf_token %}
 			{% include 'includes/form-snippet.html' %}
 			<button type="submit" class="btn btn-primary btn-comment">Comment</button>
 		</form>
@@ -35,6 +34,7 @@
 		</div>
 	
 	</div>
+	{% include 'posts/includes/reply_modal.html' %}
 {% endblock %}
 
 {% block javascript %}
