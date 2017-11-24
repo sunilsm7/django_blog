@@ -202,10 +202,12 @@ class PostDetailView(DetailView):
 		return render(request, self.template_name, {'form': form, 'post':self.object, 'post_comments':post_comments})
 
 	def post(self, request, *args, **kwargs):
+		# import pdb
+		# pdb.set_trace()
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
 		data = dict()
-		if request.is_ajax() and request.method == 'POST':	
+		if request.is_ajax():	
 			try:
 				parent_id = self.request.POST.get('parent_id')
 			except:
@@ -250,10 +252,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 		return context 
 
 
-class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
 	model = Post
 	form_class = PostForm
-	permission_required = ('posts.can_change')
+	# permission_required = ('posts.can_change')
 	template_name = 'posts/new_post.html'
 	# success_url = reverse_lazy('posts:list')
 	success_message = "Post updated successfully"
@@ -269,11 +271,11 @@ class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 		return context
 
 
-class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
 	model = Post
 	template_name = 'posts/post_confirm_delete.html'
 	success_url = reverse_lazy('posts:list')
-	permission_required = ('posts.can_delete')
+	# permission_required = ('posts.can_delete')
 
 class CommentUpdateView(UpdateView):
 	# model = Comment

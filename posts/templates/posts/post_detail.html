@@ -14,7 +14,7 @@
 <div class="container">
 	<h2>{{ post.title }}</h2>
 	<h6 class="text-muted" data-post_id="{{ post.id }}" id="post_title_id" data-api_post_comments_list_url="{% url 'posts-api:post-comment-list' post.id  %}" data-api_post_detail_url="{% url 'posts-api:post-detail' post.id %}">By: {{ post.user }}.</h6>
-	<h6 class="text-muted">Published on: {{ post.publish }}. Last Updated: {{ post.updated|naturaltime }}. Comments: {{ post.comments.count }}. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
+	<h6 class="text-muted">Published on: {{ post.publish }}. Last Updated: {{ post.updated|naturaltime }}. Comments: <span id="post_comment_id">{{ post.comments.count }}</span>. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
 	<p>{{ post.get_content_as_markdown }}</p>
 
 	<h3>Comments</h3>

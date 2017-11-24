@@ -54,7 +54,7 @@ class CommentDeleteAPIView(generics.RetrieveDestroyAPIView):
 class CommentDetailAPIView(generics.RetrieveAPIView):
 	queryset = Comment.objects.all()
 	serializer_class = CommentDetailSerializer
-	permission_classes = (permissions.AllowAny,)
+	# permission_classes = (permissions.AllowAny,)
 
 
 class CommentListAPIView(generics.ListAPIView):

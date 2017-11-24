@@ -10,7 +10,7 @@
       <div class="modal-body">
         <span>Replying to : <strong id="comment_text_content"></strong>  comment.</span>
         {% if user.is_authenticated %}
-        <form method="POST action="." class="form-inline form-replies mt-2" data-comment_post_url="{% url 'posts:details' post.id %}"> {% csrf_token %}
+        <form method="POST action="." class="form-inline form-replies mt-2" data-comment_post_url="{% url 'posts:details' post.id %}" data-api_comment_create_url="{% url 'posts-api:comment-create' %}"> {% csrf_token %}
             {% include 'includes/form-snippet.html'%}
             <div class="modal-footer">
             

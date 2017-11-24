@@ -14,13 +14,10 @@
 <h2> Blog Posts</h2>
 	{% for post in posts %}
 		<div class="card" id="id_posts_list">
-		   <div class="card-header post-header">
-	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
-	  	  </div>
 		  <div class="card-block">
-		    <!-- <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4> -->
-		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }}, By:<a href="{% url 'posts:list' %}?q={{ post.user }}">{{ post.user}}.</a> Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
-		    <p class="card-text">{{ post.get_content_as_markdown|truncatewords:30 }}</p>
+		    <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
+		    <h6 class="card-subtitle mb-2 text-muted mt-auto">Published on:{{ post.publish }}, By:<a href="{% url 'posts:list' %}?q={{ post.user }}">{{ post.user}}.</a> Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
+		    <p class="card-text">{{ post.get_content_as_markdown|truncatewords:50 }}</p>
 
 		    <a href="{{ post.get_absolute_url }}" class="card-link btn btn-outline-info" role="button">...Read more</a>
 
