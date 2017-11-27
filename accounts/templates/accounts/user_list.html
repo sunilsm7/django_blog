@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block title %} User List {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item active">User list</li>
+{% endblock %}
+
+{% block content %}
+	<h2>User List</h2>
+	
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>User</th>
+	      <th>Post Count</th>
+	      <th>Comments Count</th>
+	    </tr>
+	  </thead>
+
+	  <tbody>
+	  	{% for user in users %}
+		    <tr>
+		      <th scope="row">{{forloop.counter }}</th>
+		      <td><a href="{% url 'users-api:user-detail' user.id %}">{{ user.username }}</a></td>
+		      <td>{{ user.posts.count}}</td>
+		      <td>{{ user.comment_set.count }}</td>
+		    </tr>
+		{% empty %}
+			<td> Not posts yet!</td>
+	    {% endfor %}
+	  </tbody>
+	</table>
+
+{% endblock %}

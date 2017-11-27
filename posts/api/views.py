@@ -31,7 +31,8 @@ def api_root(request, format=None):
 	return Response({
 		'posts' : reverse('posts-api:post-list', request=request, format=format),
 		'comments' : reverse('posts-api:comment-list', request=request, format=format),
-		'users' : reverse('users-api:user-list', request=request, format=format)
+		'users' : reverse('users-api:user-list', request=request, format=format),
+		# 'login' : reverse('rest_framework:login', request=request, format=format),
 		})
 
 
@@ -39,7 +40,8 @@ def api_root(request, format=None):
 # comment APIViews
 class CommentCreateAPIView(generics.CreateAPIView):
 	queryset = Comment.objects.all()
-	serializer_class = CommentCreateUpdateSerializer
+	# serializer_class = CommentCreateUpdateSerializer
+	serializer_class = CommentSerializer
 	permission_classes = (permissions.IsAuthenticated,)
 
 	def perform_create(self, serializer):
@@ -120,6 +122,7 @@ class PostDetailAPIView(generics.RetrieveAPIView):
 class PostListAPIView(generics.ListAPIView):
 	serializer_class = PostListSerializer
 	permission_classes = (permissions.AllowAny,)
+	
 	
 	def get_queryset(self):
 		queryset = Post.objects.published()

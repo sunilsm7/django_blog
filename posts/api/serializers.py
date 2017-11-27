@@ -10,34 +10,23 @@ from rest_framework.serializers import (
 
 from posts.models import Post, Comment
 
-# new serializers
-class CommentCreateUpdateSerializer(ModelSerializer):
-	class Meta:
-		model = Comment
-		fields = ('post','content','parent')
-
+# comments serializers
 comment_detail_url = HyperlinkedIdentityField(
 		view_name='posts-api:comment-detail',
 		#lookup_field='id'
 		)
 
-class CommentSerializer(ModelSerializer):
-	url = comment_detail_url
-	replies_count = serializers.SerializerMethodField()
+
+class CommentCreateUpdateSerializer(ModelSerializer):
 	user = serializers.SerializerMethodField()
 
 	class Meta:
-		model 	= Comment
-		fields 	= ('url','id', 'user','post','parent','content','updated', 'timestamp','replies_count')
-		read_only_fields = ('post', 'parent',)
-
-	def get_replies_count(self, obj):
-		count = obj.has_replies().count()
-		return count
+		model = Comment
+		fields = ['user', 'post', 'content', 'parent', 'timestamp']
+		read_only_fields = ('timestamp', 'user')
 
 	def get_user(self, obj):
 		return obj.user.username
-
 
 
 class CommentDetailSerializer(ModelSerializer):
@@ -68,16 +57,46 @@ class CommentDetailSerializer(ModelSerializer):
 		count = obj.has_replies().count()
 		return count
 
-class PostCreateUpdateSerializer(ModelSerializer):
+
+class CommentSerializer(ModelSerializer):
+	url = comment_detail_url
+	replies_count = serializers.SerializerMethodField()
+	user = serializers.SerializerMethodField()
+
 	class Meta:
-		model = Post
-		fields = ('title','content','draft','read_time')
+		model 	= Comment
+		fields 	= [
+			'url',
+			'id', 
+			'user',
+			'post',
+			'parent',
+			'content',
+			'updated',
+			'timestamp',
+			'replies_count'
+			]
+		read_only_fields = ('id', 'user', 'timestamp', 'replies_count')
+
+	def get_replies_count(self, obj):
+		count = obj.has_replies().count()
+		return count
+
+	def get_user(self, obj):
+		return obj.user.username
 
 
+# Post Serializers
 post_detail_url = HyperlinkedIdentityField(
 		view_name='posts-api:post-detail',
 		#lookup_field='id'
 		)
+
+
+class PostCreateUpdateSerializer(ModelSerializer):
+	class Meta:
+		model = Post
+		fields = ('title','content','draft','read_time')
 
 
 class PostDetailSerializer(ModelSerializer):

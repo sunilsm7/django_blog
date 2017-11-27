@@ -33,13 +33,12 @@ from .models import Post, Comment
 # Create your views here.
 
 def home(request):
-	posts = Post.objects.filter(draft=False)[:10]
-
+	posts = Post.objects.published()[:10]
 	return render(request, 'home.html', {'posts': posts,})
 
 
 def posts_list(request):
-	posts_list = Post.objects.filter(draft=False)
+	posts_list = Post.objects.published()
 	page = request.GET.get('page', 1)
 	paginator = Paginator(posts_list, 10)
 
@@ -157,7 +156,7 @@ class HomeView(ListView):
 	paginate_by = 5
 
 	def get_queryset(self):
-		queryset = Post.objects.filter(draft=False)
+		queryset = Post.objects.published()
 		return queryset
 
 
@@ -209,7 +208,7 @@ class PostDetailView(DetailView):
 		data = dict()
 		if request.is_ajax():	
 			try:
-				parent_id = self.request.POST.get('parent_id')
+				parent_id = self.request.POST.get('parent')
 			except:
 				parent_id = None
 			

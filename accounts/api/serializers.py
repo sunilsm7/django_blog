@@ -7,6 +7,7 @@ from rest_framework.serializers import (
 	ModelSerializer,
 	SerializerMethodField
 	)
+
 from rest_framework.validators import UniqueValidator
 # from accounts.validators import validate_domainonly_email, validate_not_allowed_domain
 from posts.api.serializers import PostListSerializer, CommentSerializer
@@ -56,16 +57,6 @@ class UserCreateSerializer(ModelSerializer):
 		fields = ('id','username', 'email', 'password')
 		read_only_fields = ('id',)
 
-	# def validate(self, data):
-	# 	email = data['email']
-	# 	if email == '':
-	# 		raise serializers.ValidationError("email id required.")
-	# 	# else:
-	# 	# 	user = User.objects.get(email=email)
-	# 	# 	if user is not None: 
-	# 	# 		raise serializers.ValidationError("email id already exists.")
-	# 	return data
-
 	def create(self, validated_data):
 		user = User.objects.create_user(**validated_data)
 		return user
@@ -89,3 +80,9 @@ class UserSerializer(ModelSerializer):
 		queryset = Comment.objects.filter(user=obj).count()
 		#comments = CommentSerializer(user=obj, many=True, context=self.context).data
 		return queryset
+
+
+class LoginSerializer(serializers.Serializer):
+	username = serializers.CharField(max_length=120)
+	password = serializers.CharField(max_length=120)
+	

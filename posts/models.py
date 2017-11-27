@@ -29,6 +29,7 @@ class Post(models.Model):
 	width_field 	= models.IntegerField(default=0)
 	content 		= models.TextField()
 	draft 			= models.BooleanField(default = False)
+	approved 		= models.BooleanField(default = False)
 	publish 		= models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)
 	read_time 		= models.IntegerField(default = 0)
 	views 			= models.PositiveIntegerField(default=0)

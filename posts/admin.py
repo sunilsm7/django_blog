@@ -7,8 +7,8 @@ from .models import Post, Comment
 
 
 class PostAdmin(admin.ModelAdmin):
-	list_display = ['title', 'publish', 'user']
-	list_filter = ['user']
+	list_display = ['title', 'publish', 'user', 'approved']
+	list_filter = ['draft', 'approved']
 	date_hierarchy = 'timestamp'
 	prepopulated_fields = {"slug": ("title",)}
 	list_per_page = 50

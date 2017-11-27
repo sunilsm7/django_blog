@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block title %} User Detail {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'users-api:user-list' %}">User list</a></li>
+	<li class="breadcrumb-item active">User Detail</li>
+{% endblock %}
+
+{% block content %}
+	<h2>{{ user_detail.username }} Posts</h2>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>Post title</th>
+	      <th>Published</th>
+	      <th>Approved</th>
+	    </tr>
+	  </thead>
+
+	  <tbody>
+	  	{% for post in user_detail.posts.all %}
+		    <tr>
+		      <th scope="row">{{forloop.counter }}</th>
+		      <td><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></td>
+		      <td>{{ post.publish }}</td>
+		      <td>{{ post.approved }}</td>
+		    </tr>
+		{% empty %}
+			<td> Not posts yet!</td>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% include 'includes/pagination.html' %}
+
+{% endblock %}

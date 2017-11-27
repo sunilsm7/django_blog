@@ -10,35 +10,13 @@
 {% endblock %}
 
 {% block content %}
-	<h2>All Published Posts </h2>
-
-	{% include 'includes/messages.html' %}
-	
-	{% for post in user.post_set.published %}
-		<div class="card">
-		   <div class="card-header post-header">
-	    		<h4><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4>
-	  	  </div>
-		  <div class="card-block">
-		    <!-- <h4 class="card-title"><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></h4> -->
-		    <h6 class="card-subtitle mb-2 text-muted">Published on:{{ post.publish }}, By:{{ post.user}}. Last Updated: {{ post.updated|naturaltime }}. Views: {{ post.views }}. Comments: {{ post.comments.count }} </h6>
-		    <p class="card-text">{{ post.get_content_as_markdown|truncatewords:30 }}</p>
-
-		    <a href="{{ post.get_absolute_url }}" class="card-link" role="button">...Read more</a>
-
-		    {% if user.is_authenticated and post.user == request.user %}
-		    	<a class="btn btn-default btn-sm" href="{% url 'posts:edit' post.id %}" role="button">Update</a>
-		    	<a class="btn btn-default btn-sm" href="{% url 'posts:delete' post.id %}" role="button">Delete</a>
-		    {% endif %}
-		    
-		  </div>
-		</div>
-	{% empty %}	
-		<strong>No posts found!</strong>
+	<h2>User Profile</h2>
+	<h4>Published Post</h4>
+	{{ user_posts.posts }}
+	{% for post in user_posts.post.all %}
+	<ul>
+		<li>{{ post.title }}</li>
+	</ul>
 	{% endfor %}
-
-
-
-
-{{ user.post_set.drafts }}
+	
 {% endblock %}
