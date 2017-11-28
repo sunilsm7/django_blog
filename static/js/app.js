@@ -105,6 +105,7 @@ $(document).ready(function(){
             let user = comment_list[key]['user'];
             let replies = comment_list[key]['replies_count'];
             let comment_id = comment_list[key]['id'];
+            
             let output = `<div class="card comment-card" data-comment_id="${comment_id}" id="comment_id_${comment_id}">
                     <div class="card-block">
                         <h5 class="card-title">By:${user}. <small class="text-muted">on: ${ timestamp }.  Replies: <span>${replies}</span></small></h6>
@@ -467,4 +468,54 @@ $(document).ready(function(){
     });
       
   });
+
+  let $posts_status = $('.posts-status');
+  $posts_status.change(function(event){
+    let $this_ = $(this);
+    let post_id = $this_.attr('data-post_id');
+    let $form = $this_.closest('.form-post-status_update');
+    let $td_approved = $this_.closest('td').prev('td');
+
+    let post_update_url = $form.attr('data-post_update_url');
+    let $formData = $form.serialize();
+
+
+    if($this_.prop("checked")){
+      console.log('checked ' + post_id);
+      let ajaxCall = $.ajax({
+        method: "PUT",
+        url:post_update_url ,
+        data: {"approved":"True"},
+      });
+      ajaxCall.done(function(data, textStatus, jqxhr){
+        console.log(data);
+        $td_approved.text(data.approved);
+        console.log(textStatus);
+      });
+      ajaxCall.fail(function(xhr, textStatus, error){
+        console.log(error);
+        console.log(xhr);
+        console.log(textStatus);
+      });
+    }
+    else{
+      console.log('unchecked ' + post_id);
+      let ajaxCall = $.ajax({
+        method: "PUT",
+        url:post_update_url ,
+        data: {"approved":"False"},
+      });
+
+      ajaxCall.done(function(data, textStatus, jqxhr){
+        $td_approved.text(data.approved);
+        console.log(data);
+      });
+      ajaxCall.fail(function(xhr, textStatus, error){
+        console.log(xhr);
+        console.log(textStatus);
+        console.log(error);
+      });
+    }
+  });
+  
 });

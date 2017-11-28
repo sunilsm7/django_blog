@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load post_extras %}
 {% load humanize %}
 
 {% block title %} {{ user }} Profile {% endblock %}
@@ -10,13 +10,18 @@
 {% endblock %}
 
 {% block content %}
-	<h2>User Profile</h2>
-	<h4>Published Post</h4>
-	{{ user_posts.posts }}
-	{% for post in user_posts.post.all %}
-	<ul>
-		<li>{{ post.title }}</li>
-	</ul>
-	{% endfor %}
+	{% if perms.isuperuser %}
+		<ul>
+			<li><a href="{% url 'profiles:post-list' %}">Post list</a></li>
+			<li><a href="{% url 'users-api:user-list' %}">User list</a></li>
+		</ul>
+	{% endif %}
+
+	{% if user|has_group:"Authors"%}
+		<p>you are author</p>
+	{% else %}
+		<p>You are not author</p>
+		<p>want to write for us ? <a href="#">click here</a></p>
+	{% endif %}
 	
 {% endblock %}

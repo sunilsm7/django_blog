@@ -22,6 +22,7 @@ from .serializers import (
 	UserSerializer,
 	)
 
+from .permissions import IsSuperUser
 
 # user APIViews
 class SignUpIView(generics.CreateAPIView):
@@ -49,7 +50,7 @@ class UserListAPIView(generics.ListAPIView):
 class UserList(APIView):
 	renderer_classes = [TemplateHTMLRenderer]
 	template_name = 'accounts/user_list.html'
-	permission_classes = (permissions.IsAuthenticated,)
+	permission_classes = (permissions.IsAuthenticated, IsSuperUser)
 	# serializer_class = UserSerializer
 
 	def get(self, request):
@@ -61,7 +62,7 @@ class UserList(APIView):
 class UserDetail(APIView):
 	renderer_classes = [TemplateHTMLRenderer]
 	template_name = 'accounts/user_detail.html'
-	permission_classes = (permissions.IsAuthenticated,)
+	permission_classes = (permissions.IsAuthenticated, IsSuperUser)
 
 	def get(self, request, pk):
 		user_detail = get_object_or_404(User, pk=pk)

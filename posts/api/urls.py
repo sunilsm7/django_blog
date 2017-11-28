@@ -9,6 +9,7 @@ urlpatterns = [
 	#url(r'^posts/(?P<slug>[\w-]+)/detail/$', views.PostDetailAPIView.as_view(), name='post-detail'),
 	url(r'^(?P<pk>[0-9]+)/detail$', views.PostDetailAPIView.as_view(), name='post-detail'),	
 	url(r'^(?P<pk>[0-9]+)/update/$', views.PostUpdateAPIView.as_view(), name='post-update'),
+	url(r'^(?P<pk>[0-9]+)/status_update/$', views.PostStatusUpdate.as_view(), name='post-status-update'),
 	url(r'^(?P<pk>[0-9]+)/delete/$', views.PostDeleteAPIView.as_view(), name='post-delete'),
 	url(r'^comments/$', views.CommentListAPIView.as_view(), name='comment-list'),
 	url(r'^comments/(?P<post_id>[0-9]+)/post_comments/$', views.CommentListAPIView.as_view(), name='post-comment-list'),

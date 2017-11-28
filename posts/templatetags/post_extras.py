@@ -1,5 +1,5 @@
 from django import template
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db.models import Q, Count
 from posts.models import Post
 
@@ -35,3 +35,9 @@ def most_posts_by_user():
 	posts_objects = User.objects.annotate(num_posts=Count('posts'))
 	user_list = posts_objects.order_by('-num_posts')[:5]
 	return {'user_list':user_list}
+
+
+@register.filter(name='has_group')
+def has_group(user, group_name):
+	group = Group.objects.get(name=group_name)
+	return True if group in user.groups.all() else False

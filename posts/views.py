@@ -25,6 +25,7 @@ from django.views.generic.edit import (
 	)
 from django.urls import reverse_lazy
 
+from .api.permissions import IsOwnerOrReadOnly
 from .forms import CommentForm, ContactForm, PostForm
 from .mixins import AjaxFormMixin
 from .models import Post, Comment
@@ -229,10 +230,12 @@ class PostDetailView(DetailView):
 				return JsonResponse(data)
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 	model = Post
 	form_class = PostForm
+	login_url = 'profiles:login'
 	template_name = 'posts/new_post.html'
+	permission_required = ('posts.add_post')
 
 	def form_valid(self, form):
 		instance = form.save(commit=False)
@@ -251,10 +254,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 		return context 
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 	model = Post
 	form_class = PostForm
-	# permission_required = ('posts.can_change')
+	permission_required = ('posts.change_post')
 	template_name = 'posts/new_post.html'
 	# success_url = reverse_lazy('posts:list')
 	success_message = "Post updated successfully"
@@ -270,11 +273,11 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 		return context
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 	model = Post
 	template_name = 'posts/post_confirm_delete.html'
 	success_url = reverse_lazy('posts:list')
-	# permission_required = ('posts.can_delete')
+	permission_required = ('posts.delete_post')
 
 class CommentUpdateView(UpdateView):
 	# model = Comment

@@ -14,10 +14,11 @@ from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_text, force_bytes
 from django.views import View
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 
 from .forms import SignUpForm
-# from posts.utils import random_string_generator
+from posts.models import Post
 from .utils import account_activation_token
 
 # Create your views here.
@@ -104,3 +105,13 @@ def validate_username(request):
 			data['email_error_message'] = 'You can not use this email id.'
 		return JsonResponse(data)
 
+
+class PostListView(ListView):
+	model = Post
+	template_name = 'accounts/post_list.html'
+	context_object_name = 'posts'
+	paginate_by = 20
+
+	def get_queryset(self):
+		queryset = Post.objects.all()
+		return queryset

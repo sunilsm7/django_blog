@@ -96,7 +96,13 @@ post_detail_url = HyperlinkedIdentityField(
 class PostCreateUpdateSerializer(ModelSerializer):
 	class Meta:
 		model = Post
-		fields = ('title','content','draft','read_time')
+		fields = ('title','content','draft', 'read_time')
+		
+
+class PostStatusUpdateSerializer(ModelSerializer):
+	class Meta:
+		model = Post
+		fields = ('draft', 'approved',)
 
 
 class PostDetailSerializer(ModelSerializer):
@@ -117,6 +123,7 @@ class PostDetailSerializer(ModelSerializer):
 		'html',
 		'draft',
 		'publish',
+		'approved',
 		'read_time',
 		'views',
 		'updated',
@@ -140,13 +147,26 @@ class PostDetailSerializer(ModelSerializer):
 	def get_user(self, obj):
 		return obj.user.username
 
+
 class PostListSerializer(ModelSerializer):
 	comments_count = serializers.SerializerMethodField()
 	user = serializers.SerializerMethodField()
 	url = post_detail_url
 	class Meta:
 		model = Post
-		fields 	= ('url','title','slug','user','content','publish','read_time','views','comments_count')
+		fields 	=[
+		'url',
+		'title',
+		'slug',
+		'user',
+		'content',
+		'draft',
+		'publish',
+		'approved',
+		'read_time',
+		'views',
+		'comments_count'
+		]
 
 	def get_comments_count(self, obj):
 		count = obj.get_comments.count()

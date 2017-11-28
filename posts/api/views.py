@@ -21,9 +21,11 @@ from .serializers import (
 	CommentDetailSerializer,
 	PostCreateUpdateSerializer,
 	PostDetailSerializer,
-	PostListSerializer, 
+	PostListSerializer,
+	PostStatusUpdateSerializer,
 	)
 from .permissions import IsOwnerOrReadOnly
+from accounts.api.permissions import IsSuperUser
 
 
 @api_view(['GET'])
@@ -113,7 +115,7 @@ class PostDeleteAPIView(generics.RetrieveDestroyAPIView):
 
 
 class PostDetailAPIView(generics.RetrieveAPIView):
-	queryset = Post.objects.published()
+	queryset = Post.objects.all()
 	serializer_class = PostDetailSerializer
 	permission_classes = (permissions.AllowAny,)
 	# lookup_field = 'id'
@@ -139,4 +141,14 @@ class PostUpdateAPIView(generics.RetrieveUpdateAPIView):
 
 	def perform_update(self, serializer):
 		serializer.save(user=self.request.user)
+		serializer.save(publish=datetime.datetime.now())
+
+
+class PostStatusUpdate(generics.RetrieveUpdateAPIView):
+	queryset = Post.objects.all()
+	serializer_class = PostStatusUpdateSerializer
+	permission_classes = (permissions.IsAuthenticated, IsSuperUser)
+
+	def perform_update(self, serializer):
+		# serializer.save(user=self.request.user)
 		serializer.save(publish=datetime.datetime.now())

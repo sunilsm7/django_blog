@@ -16,9 +16,9 @@ from .utils import unique_slug_generator
 
 
 class Post(models.Model):
-	user 			= models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'posts', default=1)
+	user 			= models.ForeignKey(settings.AUTH_USER_MODEL, related_name = 'posts')
 	title 			= models.CharField(max_length=120)
-	slug 			= models.SlugField(unique=True)
+	slug 			= models.SlugField(unique=True, max_length=120)
 	image 			= models.ImageField(upload_to='media/',
 		null = True,
 		blank=True,
@@ -61,8 +61,8 @@ class Post(models.Model):
 
 	@property
 	def get_comments(self):
-		instance = self
-		qs = Comment.objects.filter(post=instance)
+		# qs = Comment.objects.filter(post=self)
+		qs = self.comments.all()
 		return qs
 
 

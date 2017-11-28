@@ -26,14 +26,17 @@ SECRET_KEY = '-#8j-y^)smx#cc8$i%(zy0ik4_3dzoqoxkdvwgvp5)hi^g3q9+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','testserver']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+	# our apps
 	'accounts',
 	'posts',
+
+	# built-in apps
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
@@ -44,12 +47,14 @@ INSTALLED_APPS = [
 	'django.contrib.humanize',
 	'django.contrib.flatpages',
 
+	# third party apps
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 	'allauth.socialaccount.providers.github',
 	'rest_framework',
+	'rest_framework.authtoken',
 	'markdown',
 	'widget_tweaks',
 	'django_filters',
@@ -193,8 +198,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ",
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        
     ),
 }

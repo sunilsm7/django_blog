@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+{% block title %} Post List {% endblock %}
+
+{% block breadcrumb %}
+	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'profiles:profile' %}">Admin</a></li>
+	<li class="breadcrumb-item active">Post List</li>
+{% endblock %}
+
+{% block content %}
+	<h2>Posts</h2>
+	<h4>Filter by </h4>
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>Post title</th>
+	      <th>Published</th>
+	      <th>Approved</th>
+	      <th>Change</th>
+	    </tr>
+	  </thead>
+
+	  <tbody>
+	  	{% for post in posts %}
+		    <tr>
+		      <th scope="row">{{forloop.counter }}</th>
+		      <td><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></td>
+		      <td>{{ post.publish }}</td>
+		      <td class="post-approved">{{ post.approved }}</td>
+		      <td>
+		      	<form action="." method="PUT" class="form-post-status_update" data-post_update_url="{% url 'posts-api:post-status-update' post.id %}"> {% csrf_token %}
+		      		<input type="checkbox" name="approved" class="posts-status"  data-post_id="{{ post.id }}"{%if post.approved == True%}checked value="True" {% else %}unchecked value="False" {% endif %}>
+		      </form>
+		      </td>
+		    </tr>
+		{% empty %}
+			<td> Not posts yet!</td>
+	    {% endfor %}
+	  </tbody>
+	</table>
+{% include 'includes/pagination.html' %}
+
+{% endblock %}
