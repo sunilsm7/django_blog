@@ -6,7 +6,7 @@
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-	<li class="breadcrumb-item active">User Profile</li>
+	<li class="breadcrumb-item active">Dashboard</li>
 {% endblock %}
 
 {% block content %}
@@ -17,11 +17,11 @@
 		</ul>
 	{% endif %}
 
-	{% if user|has_group:"Authors"%}
+	<!-- {% if user|has_group:"Authors"%}
 		<p>you are author</p>
 	{% else %}
 		<p>You are not author</p>
 		<p>want to write for us ? <a href="#">click here</a></p>
-	{% endif %}
+	{% endif %} -->
 	
 {% endblock %}

@@ -25,4 +25,5 @@ urlpatterns = [
 		views.activate, name='activate'),
 
 	url(r'^validate_username/$', views.validate_username, name='validate_username'),
+	url(r'^add_remove_author/$', views.add_remove_author, name='add_remove_author'),
 ]

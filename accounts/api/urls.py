@@ -2,6 +2,7 @@ from django.conf.urls import url
 from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
+from rest_framework.authtoken import views as rest_framework_views
 
 urlpatterns = [
 	# url(r'^$', views.UserListAPIView.as_view(), name = 'user-list'),
@@ -10,7 +11,7 @@ urlpatterns = [
 	# url(r'^(?P<pk>[0-9])+/detail/$', views.UserDetailAPIView.as_view(), name = 'user-detail'),
 	url(r'^(?P<pk>[0-9])+/detail/$', views.UserDetail.as_view(), name = 'user-detail'),
 	url(r'^login/$', views.login, name='login'),
-	# url(r'^(?P<pk>[0-9])+/delete/$', views.UserDeleteAPIView.as_view(), name = 'user-delete'),
+	url(r'^get_auth_token/$', rest_framework_views.obtain_auth_token, name='get_auth_token'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

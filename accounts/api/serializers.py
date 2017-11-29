@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from rest_framework.authtoken.models import Token
 from rest_framework.serializers import (
 	HyperlinkedModelSerializer,
 	HyperlinkedIdentityField,
 	ModelSerializer,
+	Serializer,
 	SerializerMethodField
 	)
 
@@ -42,7 +44,27 @@ class UserDetailSerializer(ModelSerializer):
 		return queryset
 
 
-class UserCreateSerializer(ModelSerializer):
+class UserSerializer(ModelSerializer):
+	url = user_detail_url
+	posts_count = serializers.SerializerMethodField()
+	comments_count = serializers.SerializerMethodField()
+
+	class Meta:
+		model = User
+		fields = ('url','id', 'username', 'groups','posts_count','comments_count')
+		read_only_fields = ('id',)
+
+	def get_posts_count(self, obj):
+		count = obj.posts.count()
+		return count
+
+	def get_comments_count(self, obj):
+		queryset = Comment.objects.filter(user=obj).count()
+		#comments = CommentSerializer(user=obj, many=True, context=self.context).data
+		return queryset
+
+
+class SignUpSerializer(ModelSerializer):
 	email = serializers.EmailField(
 		max_length=120,
 		validators =[UniqueValidator(
@@ -56,33 +78,25 @@ class UserCreateSerializer(ModelSerializer):
 		model = User
 		fields = ('id','username', 'email', 'password')
 		read_only_fields = ('id',)
+		
 
 	def create(self, validated_data):
-		user = User.objects.create_user(**validated_data)
-		return user
+		password = validated_data['password']
+		if len(password) < 8:
+			raise serializers.ValidationError("Password must be at least 8 characters")
+		else:
+			user = User.objects.create_user(**validated_data)
+			return user
 
-
-class UserSerializer(ModelSerializer):
-	url = user_detail_url
-	posts_count = serializers.SerializerMethodField()
-	comments_count = serializers.SerializerMethodField()
-
-	class Meta:
-		model = User
-		fields = ('url','id', 'username', 'posts_count','comments_count')
-		read_only_fields = ('id',)
-
-	def get_posts_count(self, obj):
-		count = obj.posts.count()
-		return count
-
-	def get_comments_count(self, obj):
-		queryset = Comment.objects.filter(user=obj).count()
-		#comments = CommentSerializer(user=obj, many=True, context=self.context).data
-		return queryset
-
-
-class LoginSerializer(serializers.Serializer):
-	username = serializers.CharField(max_length=120)
-	password = serializers.CharField(max_length=120)
 	
+
+class LoginSerializer(Serializer):
+	username 	= serializers.CharField(max_length=120)
+	password	= serializers.CharField(max_length=120)
+
+	def validate(self, data):
+		username = data['username']
+		passowrd = data['passowrd']	
+		if not username or not password:
+			raise serializers.ValidationError('Missing username of password')
+		return data

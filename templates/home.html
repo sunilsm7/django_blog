@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load post_extras %}
 
 {% block title%} Blog Homepage {% endblock %}
@@ -63,6 +64,10 @@
 {% endblock %}
 	
 {% block javascript %}
+
+<script type="text/javascript" src="{% static 'js/jquery.waypoints.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/infinite.min.js' %}"></script>
+
 	<script>
     var infinite = new Waypoint.Infinite({
       element: $('.infinite-container')[0],

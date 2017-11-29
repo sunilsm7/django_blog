@@ -6,6 +6,7 @@
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'profiles:profile' %}">Dashboard</a></li>
 	<li class="breadcrumb-item"><a href="{% url 'users-api:user-list' %}">User list</a></li>
 	<li class="breadcrumb-item active">User Detail</li>
 {% endblock %}
@@ -19,6 +20,7 @@
 	      <th>Post title</th>
 	      <th>Published</th>
 	      <th>Approved</th>
+	      <th>Change</th>
 	    </tr>
 	  </thead>
 
@@ -28,7 +30,12 @@
 		      <th scope="row">{{forloop.counter }}</th>
 		      <td><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></td>
 		      <td>{{ post.publish }}</td>
-		      <td>{{ post.approved }}</td>
+		      <td class="post-approved">{{ post.approved }}</td>
+		      <td>
+		      	<form action="." method="PUT" class="form-post-status_update" data-post_update_url="{% url 'posts-api:post-status-update' post.id %}"> {% csrf_token %}
+		      		<input type="checkbox" name="approved" class="posts-status"  data-post_id="{{ post.id }}"{%if post.approved == True%}checked value="True" {% else %}unchecked value="False" {% endif %}>
+		      	</form>
+		      </td>
 		    </tr>
 		{% empty %}
 			<td> Not posts yet!</td>

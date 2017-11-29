@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-
+{% load post_extras %}
 {% load humanize %}
 
 {% block title %} User List {% endblock %}
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+	<li class="breadcrumb-item"><a href="{% url 'profiles:profile' %}">Dashboard</a></li>
 	<li class="breadcrumb-item active">User list</li>
 {% endblock %}
 
@@ -19,6 +20,8 @@
 	      <th>User</th>
 	      <th>Post Count</th>
 	      <th>Comments Count</th>
+	      <th>Author ? </th>
+	      <th>Change</th>
 	    </tr>
 	  </thead>
 
@@ -29,11 +32,23 @@
 		      <td><a href="{% url 'users-api:user-detail' user.id %}">{{ user.username }}</a></td>
 		      <td>{{ user.posts.count}}</td>
 		      <td>{{ user.comment_set.count }}</td>
+		      <td>
+		      	{% if user|has_group:"Authors"%}
+					True
+				{% else %}
+					False
+				{% endif %}
+				
+		      </td>
+		      <td>
+		      	<form action="." method="POST" class="form-author-status_update" data-author_add_remove_url="{% url 'profiles:add_remove_author'%}"> {% csrf_token %}
+		      		<input type="checkbox" name="author_status" class="author-status"  data-user="{{ user }}"{%if user|has_group:"Authors"%}checked value="True" {% else %}unchecked value="False" {% endif %}>
+		      	</form>
+		      </td>
 		    </tr>
 		{% empty %}
 			<td> Not posts yet!</td>
 	    {% endfor %}
 	  </tbody>
 	</table>
-
 {% endblock %}

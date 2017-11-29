@@ -479,7 +479,6 @@ $(document).ready(function(){
     let post_update_url = $form.attr('data-post_update_url');
     let $formData = $form.serialize();
 
-
     if($this_.prop("checked")){
       console.log('checked ' + post_id);
       let ajaxCall = $.ajax({
@@ -489,7 +488,8 @@ $(document).ready(function(){
       });
       ajaxCall.done(function(data, textStatus, jqxhr){
         console.log(data);
-        $td_approved.text(data.approved);
+        // $td_approved.text(data.approved);
+        $td_approved.text('True');
         console.log(textStatus);
       });
       ajaxCall.fail(function(xhr, textStatus, error){
@@ -507,8 +507,10 @@ $(document).ready(function(){
       });
 
       ajaxCall.done(function(data, textStatus, jqxhr){
-        $td_approved.text(data.approved);
+        // $td_approved.text(data.approved);
+        $td_approved.text("False");
         console.log(data);
+        console.log(textStatus);
       });
       ajaxCall.fail(function(xhr, textStatus, error){
         console.log(xhr);
@@ -517,5 +519,66 @@ $(document).ready(function(){
       });
     }
   });
-  
+
+  let $author_status = $('.author-status');
+  $author_status.change(function(event){
+    let $this_ = $(this);
+    let user = $this_.attr('data-user');
+    let $td_author = $this_.closest('td').prev('td');
+    let $form = $this_.closest('.form-author-status_update');
+    let $formData = $form.serialize();
+    let author_add_remove_url = $form.attr('data-author_add_remove_url');
+    console.log(author_add_remove_url);
+
+    if($this_.prop("checked")){
+      console.log('checked for: ' + user);
+      console.log($formData);
+
+      $td_author.text("True");
+      // let ajaxCall = $.ajax({
+      //   method: "POST",
+      //   url:author_add_remove_url ,
+      //   data: {
+      //     "username":user,
+      //     "author_status":"True"
+      //   },
+      // });
+      // ajaxCall.done(function(data, textStatus, jqxhr){
+      //   console.log(data);
+      //   console.log(textStatus);
+      //   $td_author.text("True");
+      // });
+      // ajaxCall.fail(function(xhr, textStatus, error){
+      //   console.log(xhr);
+      //   console.log(textStatus);
+      //   console.log(error);
+      // });
+
+    }
+    else{
+      console.log('unchecked for: ' + user);
+      console.log($formData);
+
+      $td_author.text("False");
+      // let ajaxCall = $.ajax({
+      //   method: "POST",
+      //   url:author_add_remove_url ,
+      //   data: {
+      //     "username":user,
+      //     "author_status":"False"
+      //   },
+      // });
+      // ajaxCall.done(function(data, textStatus, jqxhr){
+      //   console.log(data);
+      //   console.log(textStatus);
+      //   $td_author.text("False");
+      // });
+      // ajaxCall.fail(function(xhr, textStatus, error){
+      //   console.log(xhr);
+      //   console.log(textStatus);
+      //   console.log(error);
+      // });
+    }
+  });
+
 });

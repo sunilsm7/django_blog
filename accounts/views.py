@@ -4,11 +4,11 @@ from __future__ import unicode_literals
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -115,3 +115,35 @@ class PostListView(ListView):
 	def get_queryset(self):
 		queryset = Post.objects.all()
 		return queryset
+
+def add_remove_author(request):
+	if request.is_ajax and request.method == 'POST':
+		username = request.POST.get('username')
+		check_status = request.POST.get('author_status');
+		import pdb
+		pdb.set_trace()
+		author_group = Group.objects.get(name='Authors')
+		user = get_object_or_404(User, username=username)
+		# qs = author_group.user_set.get(username=username)
+		data = {
+			'objects':objects,
+			'author': 'False'
+		}
+		return JsonResponse(data)
+		
+		# if qs.exists():
+		# 	objects = author_group.user_set.remove(user)
+		# 	data = {
+		# 		'objects':objects,
+		# 		'author': 'False'
+		# 	}
+		# 	return JsonResponse(data)
+		# else:
+		# 	objects = author_group.user_set.add(user)
+		# 	data = {
+		# 		'objects':objects,
+		# 		'author': 'True'
+		# 	}
+		# 	return JsonResponse(data)
+
+
