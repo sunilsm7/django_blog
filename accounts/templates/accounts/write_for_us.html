@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %} Contact us {% endblock %}
+{% block title %} Write for us{% endblock %}
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
@@ -8,21 +8,27 @@
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-  	<li class="breadcrumb-item active">Contact us</li>
+	<li class="breadcrumb-item active">Write for us</li>
 {% endblock %}
 
 {% block content %}
-	<div class="row">
+<div class="row">
 		<div class="container col-sm-8">
-			<h2>Contact us </h2>
-			<form action="." method="POST" class="contact-form" data-url = "{% url 'contact' %}" novalidate>{% csrf_token %}
+			{% include 'includes/messages.html' %}
+			
+			<h2>How to write for Django Unchained</h2>
+			
+			<p><h5 class="text-muted">
+				Interested? Send an message below with a link to your already published 	Medium article, a pitch, a story you’ve published elsewhere, or a Medium draft
+				</h5>
+			</p>
+			<form action="." method="POST" novalidate>{% csrf_token %}
 				{% include 'includes/form-snippet.html' %}
-				<button type="submit" class="btn btn-success btn-block">Submit</button>
+				<button type="submit" class="btn btn-success btn-block">Send Message</button>
 			</form>
 		</div>
 	</div>
 {% endblock %}
-
 
 {% block javascript %}
 	<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>

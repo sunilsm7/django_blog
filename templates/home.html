@@ -13,12 +13,6 @@
 <div class="row">
 	<div class="container col-sm-8">
 		<h2>Latest Blogs</h2>
-		
-		{% if user|has_group:"Authors"%}
-			<p>you are author</p>
-		{% else %}
-			<p>You are not author</p>
-		{% endif %}
 
 		{% if user.is_authenticated and perms.posts.add_post %}
 			<a href="{% url 'posts:new-post' %}" class="btn btn-primary" role="button">New Post</a>
@@ -34,7 +28,7 @@
 			    <p class="card-text">
 			    {{ post.get_content_as_markdown|truncatewords:30 }}</p>
 
-			    <a href="{{ post.get_absolute_url }}" class="card-link btn btn-outline-info" role="button">Read more</a>
+			    <a href="{{ post.get_absolute_url }}" class="card-link btn btn-outline-info" role="button">View more</a>
 
 			    {% if user.is_authenticated and post.user == request.user %}
 			    	<a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Update</a>

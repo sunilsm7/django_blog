@@ -1,14 +1,11 @@
 import datetime
-from rest_framework import generics
-from rest_framework import permissions
-from rest_framework import viewsets
-
+from rest_framework import generics, permissions, parsers
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
-from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_200_OK
+from rest_framework.status import HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
 
 from django.contrib.auth import authenticate
@@ -17,6 +14,8 @@ from django.shortcuts import get_object_or_404
 
 from posts.models import Post, Comment
 from .serializers import (
+	AuthTokenSerializer,
+	LoginSerializer,
 	SignUpSerializer,
 	UserDetailSerializer,
 	UserSerializer,
@@ -32,10 +31,6 @@ class SignUpIView(generics.CreateAPIView):
 	def perform_create(self, serializer):
 		serializer.save()
 
-# class UserDeleteAPIView(generics.RetrieveDestroyAPIView):
-# 	queryset = User.objects.all()
-# 	serializer_class = UserDetailSerializer
-# 	# permission_classes = (permissions.IsAuthenticatedOrReadOnly)
 
 class UserDetailAPIView(generics.RetrieveAPIView):
 	queryset = User.objects.all()
@@ -73,41 +68,44 @@ class UserDetail(APIView):
 		pass
 	
 
-@api_view(['POST'])
-def login(request):
-	if request.method == "POST":
-		username = request.POST['username']
-		password = request.POST['password']
-		user = authenticate(request, username=username, password=password)
-		if user is not None:
-			# login(request, user)
-			token, _ = Token.objects.get_or_create(user=user)
-			return Response({"token":token.key}, status=HTTP_200_OK)
-		else:
-			return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
+class UserLoginAPIView(APIView):
+	permission_classes = [permissions.AllowAny]
+	serializer_class = LoginSerializer
+	
+	def post(self, request, *args, **kwargs):
+		data = request.data
+		serializer = LoginSerializer(data=data)
+		if serializer.is_valid(raise_exception=True):
+			new_data = serializer.data
+			headers = {
+				'Authorization': 'Token ' + new_data['token'],
+			}
+			return Response(new_data, headers=headers, status=HTTP_200_OK)
+		return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
-	def post(self, request):
-		username = request.POST['username']
-		password = request.POST['password']
-		if not username or not password:
-			return Response({"error":"missing username or password"})
-		user = authenticate(request, username=username, password=password)
-		if user is not None:
-			# login(request, user)
-			token, _ = Token.objects.get_or_create(user=user)
-			return Response({"token":token.key}, status=HTTP_200_OK)
-		else:
-			return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
-
-
-# viewset
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-	"""
-	This viewset automatically provides list and detail actions.
-	"""
+class UserLogoutAPIView(APIView):
 	queryset = User.objects.all()
-	serializer_class = UserSerializer
+
+	def get(self, request, format=None):
+		try:
+			request.user.auth_token.delete()
+		except:
+			pass
+		return Response(status=HTTP_200_OK)
 
 
+class ObtainAuthToken(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (JSONRenderer,)
+    serializer_class = AuthTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key,'user':user.username})

@@ -12,3 +12,7 @@ class SignUpForm(UserCreationForm):
 		widgets = {
 			'username' : forms.TextInput(attrs= {'placeholder': 'enter username'}),
 		}
+
+
+class WriteForUsForm(forms.Form):
+	message = forms.CharField(label='' ,widget = forms.Textarea(attrs={'placeholder':'what is in your mind ?',}))

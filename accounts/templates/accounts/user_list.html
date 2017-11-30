@@ -12,7 +12,7 @@
 
 {% block content %}
 	<h2>User List</h2>
-	
+	<h4>filter by</h4>
 	<table class="table">
 	  <thead>
 	    <tr>
@@ -42,7 +42,7 @@
 		      </td>
 		      <td>
 		      	<form action="." method="POST" class="form-author-status_update" data-author_add_remove_url="{% url 'profiles:add_remove_author'%}"> {% csrf_token %}
-		      		<input type="checkbox" name="author_status" class="author-status"  data-user="{{ user }}"{%if user|has_group:"Authors"%}checked value="True" {% else %}unchecked value="False" {% endif %}>
+		      		<input type="checkbox" name="author_status" class="author-status"  data-user="{{ user }}"{%if user|has_group:"Authors"%}checked="True" value="True" {% else %}unchecked="True" value="False" {% endif %}>
 		      	</form>
 		      </td>
 		    </tr>

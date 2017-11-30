@@ -32,7 +32,7 @@
 		      <td>{{ post.publish }}</td>
 		      <td class="post-approved">{{ post.approved }}</td>
 		      <td>
-		      	<form action="." method="PUT" class="form-post-status_update" data-post_update_url="{% url 'posts-api:post-status-update' post.id %}"> {% csrf_token %}
+		      	<form action="." method="PUT" class="form-post-status_update" data-post_approved_change_url="{% url 'profiles:post_approved_change' %}" data-post_update_url="{% url 'posts-api:post-status-update' post.id %}"> {% csrf_token %}
 		      		<input type="checkbox" name="approved" class="posts-status"  data-post_id="{{ post.id }}"{%if post.approved == True%}checked value="True" {% else %}unchecked value="False" {% endif %}>
 		      </form>
 		      </td>

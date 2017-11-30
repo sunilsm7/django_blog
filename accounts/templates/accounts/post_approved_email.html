@@ -1,0 +1,13 @@
+{% autoescape off %}
+	Hi  {{ user.username }}
+	{% if post.approved == 'True' %}
+		Your Post has been approved
+	{% else %}
+		Your Post has not approved. 
+		Please rework on it.
+	{% endif %}
+	Post Title: {{ post.title }}
+	Please click on the link to view your post.
+	http://{{ domain }}/posts/list/{{ post.id }}/details/
+	
+{% endautoescape %}

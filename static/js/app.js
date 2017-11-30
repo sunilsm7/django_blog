@@ -22,6 +22,8 @@ $(document).ready(function(){
   }
 
   var csrftoken = getCookie('csrftoken');
+  
+
 
   function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
@@ -477,14 +479,18 @@ $(document).ready(function(){
     let $td_approved = $this_.closest('td').prev('td');
 
     let post_update_url = $form.attr('data-post_update_url');
+    let post_approved_change_url = $form.attr('data-post_approved_change_url');
     let $formData = $form.serialize();
 
     if($this_.prop("checked")){
       console.log('checked ' + post_id);
       let ajaxCall = $.ajax({
-        method: "PUT",
-        url:post_update_url ,
-        data: {"approved":"True"},
+        method: "POST",
+        url:post_approved_change_url ,
+        data: {
+          "post_id":post_id,
+          "approved":"True",
+        },
       });
       ajaxCall.done(function(data, textStatus, jqxhr){
         console.log(data);
@@ -501,9 +507,12 @@ $(document).ready(function(){
     else{
       console.log('unchecked ' + post_id);
       let ajaxCall = $.ajax({
-        method: "PUT",
-        url:post_update_url ,
-        data: {"approved":"False"},
+        method: "POST",
+        url:post_approved_change_url ,
+        data: {
+          "post_id":post_id,
+          "approved":"False"
+        },
       });
 
       ajaxCall.done(function(data, textStatus, jqxhr){
@@ -532,8 +541,7 @@ $(document).ready(function(){
 
     if($this_.prop("checked")){
       console.log('checked for: ' + user);
-      console.log($formData);
-
+      $this_.prop("unchecked");
       $td_author.text("True");
       // let ajaxCall = $.ajax({
       //   method: "POST",
@@ -557,8 +565,6 @@ $(document).ready(function(){
     }
     else{
       console.log('unchecked for: ' + user);
-      console.log($formData);
-
       $td_author.text("False");
       // let ajaxCall = $.ajax({
       //   method: "POST",

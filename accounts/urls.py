@@ -26,4 +26,6 @@ urlpatterns = [
 
 	url(r'^validate_username/$', views.validate_username, name='validate_username'),
 	url(r'^add_remove_author/$', views.add_remove_author, name='add_remove_author'),
+	url(r'^write_for_us/$', views.write_for_us, name='write_for_us'),
+	url(r'^post_approved_change/$', views.post_approved_change, name='post_approved_change'),
 ]

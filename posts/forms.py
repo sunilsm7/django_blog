@@ -1,6 +1,5 @@
 from django import forms
 from .models import Post, Comment
-from django.core.mail import send_mail
 
 class PostForm(forms.ModelForm):
 	class Meta:

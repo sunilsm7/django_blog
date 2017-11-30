@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -16,8 +18,10 @@ from django.utils.encoding import force_text, force_bytes
 from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
+from django.utils.html import mark_safe
+from markdown import markdown
 
-from .forms import SignUpForm
+from .forms import SignUpForm, WriteForUsForm
 from posts.models import Post
 from .utils import account_activation_token
 
@@ -116,6 +120,7 @@ class PostListView(ListView):
 		queryset = Post.objects.all()
 		return queryset
 
+
 def add_remove_author(request):
 	if request.is_ajax and request.method == 'POST':
 		username = request.POST.get('username')
@@ -127,7 +132,7 @@ def add_remove_author(request):
 		# qs = author_group.user_set.get(username=username)
 		data = {
 			'objects':objects,
-			'author': 'False'
+			'author': check_status
 		}
 		return JsonResponse(data)
 		
@@ -147,3 +152,57 @@ def add_remove_author(request):
 		# 	return JsonResponse(data)
 
 
+@login_required
+def write_for_us(request):
+	context = {}
+	if request.method == 'POST':
+		form = WriteForUsForm(request.POST)
+		if form.is_valid():
+			user = request.user
+			email = user.email
+			subject = 'Write for us'
+			user_message = form.cleaned_data['message']
+			# user_message = mark_safe(markdown(user_message, safe_mode='escape'))
+			message = render_to_string('accounts/write_for_us_email.html', {
+				'user': user,
+				'email': email,
+				'message' : user_message,
+				})
+			send_mail(subject, message, email, ['admin@example.com'])
+			messages.success(request, 'Request Send Successfully!.')
+			form = WriteForUsForm()
+			return render(request, 'accounts/write_for_us.html', context={'form':form})
+	else:
+		form = WriteForUsForm()
+	context['form'] = form
+	return render(request, 'accounts/write_for_us.html', context=context)
+
+
+@login_required
+def post_approved_change(request):
+	current_site = None
+
+	if request.is_ajax:
+		post_id = request.POST.get('post_id')
+		approved = request.POST.get('approved')
+		post = get_object_or_404(Post, id=post_id)
+		user = post.user 
+		post.approved = approved
+		post.save()
+
+		approved_status = post.approved
+		current_site = get_current_site(request)
+		subject = 'Post Approved'
+		email = user.email
+		message = render_to_string('accounts/post_approved_email.html', {
+			'user': user,
+			'email': email,
+			'post' : post,
+			'domain':current_site,
+			})
+		send_mail(subject, message, 'admin@example.com', [email, ],)
+		data = {
+			'post_id':post_id,
+			'approved':approved_status
+		}
+		return JsonResponse(data)

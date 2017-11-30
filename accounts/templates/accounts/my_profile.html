@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load post_extras %}
+
 {% load humanize %}
 
 {% block title %} {{ user }} Profile {% endblock %}
@@ -16,12 +16,5 @@
 			<li><a href="{% url 'users-api:user-list' %}">User list</a></li>
 		</ul>
 	{% endif %}
-
-	<!-- {% if user|has_group:"Authors"%}
-		<p>you are author</p>
-	{% else %}
-		<p>You are not author</p>
-		<p>want to write for us ? <a href="#">click here</a></p>
-	{% endif %} -->
 	
 {% endblock %}

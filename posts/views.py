@@ -24,6 +24,8 @@ from django.views.generic.edit import (
 	DeleteView
 	)
 from django.urls import reverse_lazy
+from django.utils.html import mark_safe
+from markdown import markdown
 
 from .api.permissions import IsOwnerOrReadOnly
 from .forms import CommentForm, ContactForm, PostForm
@@ -134,7 +136,8 @@ class ContactView(AjaxFormMixin, FormView):
 			subject = form.cleaned_data['subject']
 			email = form.cleaned_data['email']
 			message = form.cleaned_data['message']
-			send_mail(subject, message, email, ['admin@example.com'])
+			marked_message = mark_safe(markdown(message, safe_mode='escape'))
+			send_mail(subject, marked_message, email, ['admin@example.com'])
 			data = {
 				'message': 'Successfully send data. We will revert soon.'
 			}
@@ -202,8 +205,6 @@ class PostDetailView(DetailView):
 		return render(request, self.template_name, {'form': form, 'post':self.object, 'post_comments':post_comments})
 
 	def post(self, request, *args, **kwargs):
-		# import pdb
-		# pdb.set_trace()
 		self.object = self.get_object()
 		self.form = self.form_class(request.POST)
 		data = dict()
@@ -279,11 +280,6 @@ class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 	success_url = reverse_lazy('posts:list')
 	permission_required = ('posts.delete_post')
 
-class CommentUpdateView(UpdateView):
-	# model = Comment
-	# template_name = 'posts/post_detail.html'
-	pass
-
 
 class RepliesListView(ListView):
 	model = Comment
@@ -320,7 +316,3 @@ def get_posts(request):
 	else:
 		data_json = 'fail'
 	return HttpResponse(data_json, content_type='application/json')
-
-
-
-

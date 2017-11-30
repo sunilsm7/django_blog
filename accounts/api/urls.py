@@ -10,8 +10,9 @@ urlpatterns = [
 	url(r'^signup/$', views.SignUpIView.as_view(), name = 'user-create'),
 	# url(r'^(?P<pk>[0-9])+/detail/$', views.UserDetailAPIView.as_view(), name = 'user-detail'),
 	url(r'^(?P<pk>[0-9])+/detail/$', views.UserDetail.as_view(), name = 'user-detail'),
-	url(r'^login/$', views.login, name='login'),
-	url(r'^get_auth_token/$', rest_framework_views.obtain_auth_token, name='get_auth_token'),
+	url(r'^login/$', views.UserLoginAPIView.as_view(), name='login'),
+	url(r'^logout/$', views.UserLogoutAPIView.as_view(), name='logout'),
+	url(r'^get_auth_token/$', views.ObtainAuthToken.as_view(), name='get_auth_token'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

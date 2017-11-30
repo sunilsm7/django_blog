@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers
+from django.utils.translation import ugettext_lazy as _
 
+from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.compat import authenticate
 from rest_framework.serializers import (
 	HyperlinkedModelSerializer,
 	HyperlinkedIdentityField,
@@ -11,7 +13,6 @@ from rest_framework.serializers import (
 	)
 
 from rest_framework.validators import UniqueValidator
-# from accounts.validators import validate_domainonly_email, validate_not_allowed_domain
 from posts.api.serializers import PostListSerializer, CommentSerializer
 from posts.models import Post, Comment
 
@@ -81,22 +82,77 @@ class SignUpSerializer(ModelSerializer):
 		
 
 	def create(self, validated_data):
+		username = validated_data['username']
+		email = validated_data['email']
 		password = validated_data['password']
+
 		if len(password) < 8:
 			raise serializers.ValidationError("Password must be at least 8 characters")
-		else:
-			user = User.objects.create_user(**validated_data)
-			return user
+		user_obj = User(
+				username = username,
+				email = email
+			)
+		user_obj.set_password(password)
+		user_obj.save()
+		return validated_data
 
-	
 
-class LoginSerializer(Serializer):
-	username 	= serializers.CharField(max_length=120)
-	password	= serializers.CharField(max_length=120)
+class LoginSerializer(ModelSerializer):
+	token = serializers.CharField(allow_blank=True, read_only=True)
+	username = serializers.CharField()
+
+	class Meta:
+		model = User
+		fields = [
+			'username',
+			'password',
+			'token',
+			
+		]
+		extra_kwargs = {"password":
+							{"write_only": True}
+							}
 
 	def validate(self, data):
 		username = data['username']
-		passowrd = data['passowrd']	
-		if not username or not password:
-			raise serializers.ValidationError('Missing username of password')
+		qs = User.objects.filter(username=username) 
+		if qs.exists():
+			user = qs.first()
+			email = user.email
+			token, _ = Token.objects.get_or_create(user=user)
+			data = {
+				'username':username,
+				'token':token,
+				'email':email,
+			}
 		return data
+
+
+class AuthTokenSerializer(serializers.Serializer):
+	username = serializers.CharField(label=_("Username"))
+	password = serializers.CharField(
+		label=_("Password"),
+		style={'input_type': 'password'},
+		trim_whitespace=False
+	)
+
+	def validate(self, attrs):
+		username = attrs.get('username')
+		password = attrs.get('password')
+
+		if username and password:
+			user = authenticate(request=self.context.get('request'),
+								username=username, password=password)
+			if user:
+				if not user.is_active:
+					msg = _('User account is disabled.')
+					raise serializers.ValidationError(msg, code='authorization')
+			else:
+				msg = _('Unable to log in with provided credentials.')
+				raise serializers.ValidationError(msg, code='authorization')
+		else:
+			msg = _('Must include "username" and "password".')
+			raise serializers.ValidationError(msg, code='authorization')
+
+		attrs['user'] = user
+		return attrs
