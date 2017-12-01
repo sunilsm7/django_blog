@@ -33,6 +33,7 @@ urlpatterns = [
 	url(r'^accounts/', include('allauth.urls')),
 	url(r'^profiles/', include('accounts.urls', namespace='profiles')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
+	url(r"^messages/", include("pinax.messages.urls", namespace="pinax_messages")),
 	url(r'^api/$', api_views.api_root),
 	url(r'^api/posts/', include('posts.api.urls', namespace='posts-api')),
 	url(r'^api/users/', include('accounts.api.urls', namespace='users-api')),

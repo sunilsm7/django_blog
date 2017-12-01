@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i>Message Inbox</a></li>
+    <li class="breadcrumb-item active">Message thread</li>
+{% endblock %}
+
+
+{% block content %}
+
+    <h2>{{ thread.subject }}</h2>
+
+    <section>
+        {% for message in thread.messages.all %}
+            <div class="card {% if message.sender.username == request.user.username %}card-outline-secondary{% else %} card-outline-success{% endif %}">
+              <div class="card-block">
+                <h4 class="card-title">{{ message.sender.username }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">- {{ message.sent_at }}</h6>
+                <p class="card-text">{{ message.content|urlize|linebreaks }}</p>
+              </div>
+            </div>
+        {% endfor %}
+    </section>
+  
+
+    <section>
+        <form class="comment-form" action="{% url "pinax_messages:thread_detail" thread.pk %}" method="post">
+            {% csrf_token %}
+            {% include 'includes/form-snippet.html' %}
+            <button class="btn btn-primary pull-right">Send</button>
+        </form>
+        <a class="btn btn-default" href="{% url "pinax_messages:inbox" %}">Cancel</a>
+    </section>
+
+    <section>
+        <a class="btn" href="{% url "pinax_messages:thread_delete" thread.pk %}">Delete Thread</a>
+    </section>
+{% endblock %}

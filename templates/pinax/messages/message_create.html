@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i>Message Inbox</a></li>
+    <li class="breadcrumb-item active">New message</li>
+{% endblock %}
+
+{% block content %}
+
+    <h2>New Message</h2>
+
+    <section>
+        <form class="comment-form" action="{% url "pinax_messages:message_create" %}" method="post">
+            {% csrf_token %}
+            {% include 'includes/form-snippet.html' %}
+            <button class="btn btn-primary pull-right">Send</button>
+        </form>
+        <a class="btn btn-default" href="{% url "pinax_messages:inbox" %}">Cancel</a>
+    </section>
+{% endblock %}

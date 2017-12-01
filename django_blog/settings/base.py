@@ -58,6 +58,9 @@ INSTALLED_APPS = [
 	'markdown',
 	'widget_tweaks',
 	'django_filters',
+	'pinax.messages',
+	'pinax_theme_bootstrap',
+	'bootstrapform',
 ]
 
 MIDDLEWARE = [

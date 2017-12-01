@@ -12,6 +12,7 @@
 {% block content %}
 
 <h2> Blog Posts</h2>
+<div class="container" id="container_post_list">
 	{% for post in posts %}
 		<div class="card" id="id_posts_list">
 		  <div class="card-block">
@@ -33,5 +34,5 @@
 	{% endfor %}
 
 {% include 'includes/pagination.html' %}
-
+</div>
 {% endblock %}

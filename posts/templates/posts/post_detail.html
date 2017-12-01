@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
-
+{% load static %}
 {% block title%} Blog Detail {% endblock %}
 
 {% block breadcrumb %}
@@ -39,5 +39,5 @@
 {% endblock %}
 
 {% block javascript %}
-
+	<script type="text/javascript" src="{% static 'js/post_detail.js' %}"></script>
 {% endblock %}

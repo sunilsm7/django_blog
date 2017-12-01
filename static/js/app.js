@@ -38,101 +38,7 @@ $(document).ready(function(){
   });
 
 
-  // let $api_post_comments_list_url = $("#post_title_id").attr('data-api_post_comments_list_url');
-  // let $post_comment_list = (api_post_comments_list_url) => {
-  //   let $post_comments = $('#post_comments');
-  //   console.log($api_post_comments_list_url);
-
-  //   $.getJSON(api_post_comments_list_url, function(data) {   
-  //     comment_list = data.results
-  //     let items = []
-  //     if (comment_list == 0){
-  //       $post_comments.html("<strong> No comments yet.</strong>");
-  //     }
-  //     else{
-  //       $.each(comment_list, function(key, val){
-  //         let timestamp = comment_list[key]['timestamp'];
-  //         let updated = comment_list[key]['updated'];
-  //         let content = comment_list[key]['content'];
-  //         let user = comment_list[key]['user'];
-  //         let replies = comment_list[key]['replies_count'];
-  //         let comment_id = comment_list[key]['id'];
-  //         let output = `<div class="card comment-card" data-comment_id="${comment_id}" id="comment_id_${comment_id}">
-  //                   <div class="card-block">
-  //                       <h5 class="card-title">By:${user}. <small class="text-muted">on: ${ timestamp }.  Replies: <span>${replies}</span></small></h6>
-  //                       <p class="card-text" data-user="${ user }">${ content } </p>
-  //                       <button  class="btn btn-primary btn-sm button-reply comment-reply" data-toggle="modal" data-target="#replyModal" type="button" data-parent_id="${comment_id}">Reply</button> 
-  //                       <button  class="btn btn-primary btn-sm button-view-replies" type="button" data-comment_parent_id = ${ comment_id } data-comment_detail_url="/api/posts/comments/${comment_id}/detail/">View Replies</button> 
-  //                       <ul class="comment-replies mt-2">
-  //                       </ul>
-  //                   </div>
-  //               </div>
-  //           `;
-  //         // output.appendTo($post_comments);
-  //         items.push(output);
-  //       });  
-  //       $post_comments.html(items);
-  //     }  
-  //   });
-  // };
-
-  // $post_comment_list($api_post_comments_list_url);
-
-
-
-// fetch post's comment list 
-  let $api_post_detail_url = $("#post_title_id").attr('data-api_post_detail_url');
-  let $post_single_comment = (api_post_detail_url) => {
-    let $post_comments = $('#post_comments');
-    let items = []
-
-    $.getJSON(api_post_detail_url, function(data){
-      console.log(data);
-      
-      comment_list = data.comments;
-      let comments_count = data.comment_count;
-      let $post_comment_id = $('#post_comment_id');
-      
-      $post_comment_id.text(comments_count);
-
-      if(comment_list.length === 0){
-        $post_comments.html("<strong> No comments yet.</strong>");  
-      }
-      else{
-        $.each(comment_list, function(key, val){
-          if (comment_list[key].parent == null){
-            let timestamp = comment_list[key]['timestamp'];
-            let updated = comment_list[key]['updated'];
-            let content = comment_list[key]['content'];
-            let user = comment_list[key]['user'];
-            let replies = comment_list[key]['replies_count'];
-            let comment_id = comment_list[key]['id'];
-            
-            let output = `<div class="card comment-card" data-comment_id="${comment_id}" id="comment_id_${comment_id}">
-                    <div class="card-block">
-                        <h5 class="card-title">By:${user}. <small class="text-muted">on: ${ timestamp }.  Replies: <span>${replies}</span></small></h6>
-                        <p class="card-text" data-user="${ user }">${ content } </p>
-                        <button  class="btn btn-primary btn-sm button-reply comment-reply" data-toggle="modal" data-target="#replyModal" type="button" data-parent_id="${comment_id}">Reply</button> 
-                        <button  class="btn btn-primary btn-sm button-view-replies" type="button" data-comment_parent_id = ${ comment_id } data-comment_detail_url="/api/posts/comments/${comment_id}/detail/">View Replies</button> 
-                        <ul class="comment-replies mt-2">
-                        </ul>
-                    </div>
-                </div>
-            `;
-            items.push(output);         
-          }  
-        });
-        $post_comments.html(items); // for single comment items[0]
-      }
-       
-    });   
-    // console.log(items)
-    // return items;
-  };
-
-  console.log($api_post_detail_url);
-  $post_single_comment($api_post_detail_url);
-
+ 
 
 // Sign up form validations
   let $signUpForm = $('#signUpForm');
@@ -348,8 +254,6 @@ $(document).ready(function(){
 
     ajaxCall.done(function(data, textStatus, jqxhr){
       $error_message.text('Successfully posted comment');
-      // $post_single_comment($api_post_detail_url); 
-
       let user = data.user;
       let content = data.content;
       let timestamp = data.timestamp;
@@ -471,6 +375,7 @@ $(document).ready(function(){
       
   });
 
+
   let $posts_status = $('.posts-status');
   $posts_status.change(function(event){
     let $this_ = $(this);
@@ -529,6 +434,7 @@ $(document).ready(function(){
     }
   });
 
+
   let $author_status = $('.author-status');
   $author_status.change(function(event){
     let $this_ = $(this);
@@ -542,49 +448,95 @@ $(document).ready(function(){
     if($this_.prop("checked")){
       console.log('checked for: ' + user);
       $this_.prop("unchecked");
-      $td_author.text("True");
-      // let ajaxCall = $.ajax({
-      //   method: "POST",
-      //   url:author_add_remove_url ,
-      //   data: {
-      //     "username":user,
-      //     "author_status":"True"
-      //   },
-      // });
-      // ajaxCall.done(function(data, textStatus, jqxhr){
-      //   console.log(data);
-      //   console.log(textStatus);
-      //   $td_author.text("True");
-      // });
-      // ajaxCall.fail(function(xhr, textStatus, error){
-      //   console.log(xhr);
-      //   console.log(textStatus);
-      //   console.log(error);
-      // });
+      
+      let ajaxCall = $.ajax({
+        method: "POST",
+        url:author_add_remove_url ,
+        data: {
+          "username":user,
+          "author_status":"True"
+        },
+      });
+      ajaxCall.done(function(data, textStatus, jqxhr){
+        console.log(data);
+        console.log(textStatus);
+        $td_author.text("True");
+      });
+      ajaxCall.fail(function(xhr, textStatus, error){
+        console.log(xhr);
+        console.log(textStatus);
+        console.log(error);
+      });
 
     }
     else{
       console.log('unchecked for: ' + user);
-      $td_author.text("False");
-      // let ajaxCall = $.ajax({
-      //   method: "POST",
-      //   url:author_add_remove_url ,
-      //   data: {
-      //     "username":user,
-      //     "author_status":"False"
-      //   },
-      // });
-      // ajaxCall.done(function(data, textStatus, jqxhr){
-      //   console.log(data);
-      //   console.log(textStatus);
-      //   $td_author.text("False");
-      // });
-      // ajaxCall.fail(function(xhr, textStatus, error){
-      //   console.log(xhr);
-      //   console.log(textStatus);
-      //   console.log(error);
-      // });
+      
+      let ajaxCall = $.ajax({
+        method: "POST",
+        url:author_add_remove_url ,
+        data: {
+          "username":user,
+          "author_status":"False"
+        },
+      });
+      ajaxCall.done(function(data, textStatus, jqxhr){
+        console.log(data);
+        console.log(textStatus);
+        $td_author.text("False");
+      });
+      ajaxCall.fail(function(xhr, textStatus, error){
+        console.log(xhr);
+        console.log(textStatus);
+        console.log(error);
+      });
     }
   });
+
+
+  // let $api_post_list_url = $("#post_title_id").attr('data-api_post_list_url');
+  let $api_post_list_url = '/api/posts/';
+  let $post_list = (api_post_list_url) => {
+    let $post_container = $('#container_post_list');
+    console.log(api_post_list_url);
+
+    $.getJSON(api_post_list_url, function(data) {   
+      console.log(data);
+      let post_list = data.results;
+      let items = []
+
+      if (post_list == 0){
+        $post_container.html("<strong> No comments yet.</strong>");
+      }
+      else{
+        $.each(post_list, function(key, val){
+          // let timestamp = post_list[key]['timestamp'];
+          // let updated = post_list[key]['updated'];
+          // let content = post_list[key]['content'];
+          // let user = post_list[key]['user'];
+          // let replies = post_list[key]['replies_count'];
+          // let comment_id = post_list[key]['id'];
+
+          // let output = `<div class="card comment-card" data-comment_id="${comment_id}" id="comment_id_${comment_id}">
+          //           <div class="card-block">
+          //               <h5 class="card-title">By:${user}. <small class="text-muted">on: ${ timestamp }.  Replies: <span>${replies}</span></small></h6>
+          //               <p class="card-text" data-user="${ user }">${ content } </p>
+          //               <button  class="btn btn-primary btn-sm button-reply comment-reply" data-toggle="modal" data-target="#replyModal" type="button" data-parent_id="${comment_id}">Reply</button> 
+          //               <button  class="btn btn-primary btn-sm button-view-replies" type="button" data-comment_parent_id = ${ comment_id } data-comment_detail_url="/api/posts/comments/${comment_id}/detail/">View Replies</button> 
+          //               <ul class="comment-replies mt-2">
+          //               </ul>
+          //           </div>
+          //       </div>
+          //   `;
+          let output = `post list`;
+          // output.appendTo($post_container);
+          items.push(output);
+        });  
+        // $post_container.html(items);
+      }  
+    });
+  };
+
+  $post_list($api_post_list_url);
 
 });

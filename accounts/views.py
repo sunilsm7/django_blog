@@ -22,6 +22,7 @@ from django.utils.html import mark_safe
 from markdown import markdown
 
 from .forms import SignUpForm, WriteForUsForm
+from pinax.messages.models import Message
 from posts.models import Post
 from .utils import account_activation_token
 
@@ -49,7 +50,7 @@ class SignUpView(FormView):
 		user.save()
 		current_site = get_current_site(self.request)
 		subject = 'Activate Your Django Unchained Account'
-		message = render_to_string('accounts/account_activation_email.html', {
+		message = render_to_string('accounts/email_snippets/account_activation_email.html', {
 			'user' : user,
 			'domain' : current_site.domain,
 			'uid' : urlsafe_base64_encode(force_bytes(user.pk)),
@@ -84,9 +85,9 @@ def activate(request, uidb64, activation_key):
 		return render(request, 'accounts/account_activation_invalid.html')
 
 
-class MyProfile(View):
+class DashboardView(View):
 	model = User
-	template_name = 'accounts/my_profile.html'
+	template_name = 'accounts/dashboard.html'
 	context_object_name = 'user_posts'
 	paginate_by = 10
 	
@@ -121,35 +122,55 @@ class PostListView(ListView):
 		return queryset
 
 
+
+def mail_to_user_template(template_name, user, email, subject, current_site): 
+	message = render_to_string(template_name, {
+		'user': user,
+		'email': email,
+		'domain':current_site,
+		})
+	sent_mail = send_mail(subject, message, 'admin@example.com', [email, ],)
+	return sent_mail
+
+
+@login_required
 def add_remove_author(request):
-	if request.is_ajax and request.method == 'POST':
+	if request.is_ajax:
 		username = request.POST.get('username')
 		check_status = request.POST.get('author_status');
-		import pdb
-		pdb.set_trace()
 		author_group = Group.objects.get(name='Authors')
-		user = get_object_or_404(User, username=username)
-		# qs = author_group.user_set.get(username=username)
-		data = {
-			'objects':objects,
-			'author': check_status
-		}
-		return JsonResponse(data)
+		current_site = get_current_site(request)
+
+		try:
+			user = get_object_or_404(User, username=username)
+		except:
+			pass
+
+		author_qs = author_group.user_set.filter(username=username)
 		
-		# if qs.exists():
-		# 	objects = author_group.user_set.remove(user)
-		# 	data = {
-		# 		'objects':objects,
-		# 		'author': 'False'
-		# 	}
-		# 	return JsonResponse(data)
-		# else:
-		# 	objects = author_group.user_set.add(user)
-		# 	data = {
-		# 		'objects':objects,
-		# 		'author': 'True'
-		# 	}
-		# 	return JsonResponse(data)
+		if author_qs.exists():
+			author_group.user_set.remove(user)
+			template_name = 'accounts/email_snippets/author_approval_rejection_email.html'
+			subject = "Author Permission Removed"
+			email = user.email
+
+			mail_to_user_template(template_name, user, email, subject, current_site)
+			data = {
+				'username':username,
+				'author': 'False'
+			}
+			return JsonResponse(data)
+		else:
+			author_group.user_set.add(user)
+			template_name = 'accounts/email_snippets/author_approval_email.html'
+			subject = "Author Permission Granted"
+			email = user.email
+			mail_to_user_template(template_name, user, email, subject, current_site)
+			data = {
+				'username':username,
+				'author': 'True'
+			}
+			return JsonResponse(data)
 
 
 @login_required
@@ -163,7 +184,7 @@ def write_for_us(request):
 			subject = 'Write for us'
 			user_message = form.cleaned_data['message']
 			# user_message = mark_safe(markdown(user_message, safe_mode='escape'))
-			message = render_to_string('accounts/write_for_us_email.html', {
+			message = render_to_string('accounts/email_snippets/write_for_us_email.html', {
 				'user': user,
 				'email': email,
 				'message' : user_message,
@@ -176,6 +197,9 @@ def write_for_us(request):
 		form = WriteForUsForm()
 	context['form'] = form
 	return render(request, 'accounts/write_for_us.html', context=context)
+
+
+
 
 
 @login_required
@@ -192,15 +216,19 @@ def post_approved_change(request):
 
 		approved_status = post.approved
 		current_site = get_current_site(request)
-		subject = 'Post Approved'
+		subject = 'Post Approval'
 		email = user.email
-		message = render_to_string('accounts/post_approved_email.html', {
+		message = render_to_string('accounts/email_snippets/post_approved_email.html', {
 			'user': user,
 			'email': email,
 			'post' : post,
 			'domain':current_site,
 			})
+		content = ""
 		send_mail(subject, message, 'admin@example.com', [email, ],)
+		Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
+
+		# mail_to_user_template(template_name, user, email, subject, current_site)
 		data = {
 			'post_id':post_id,
 			'approved':approved_status

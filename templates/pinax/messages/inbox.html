@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+​
+{% load i18n %}
+{% load pinax_messages_tags %}
+​
+{% block title %}Messages{% endblock %}
+​
+{% block body_class %}messages{% endblock %}
+​
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+    <li class="breadcrumb-item active">Messages Inbox</li>
+{% endblock %}
+
+{% block content %}
+    <section class="actions-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <a class="btn btn-success pull-right" href="{% url "pinax_messages:message_create" %}">New message</a>
+                <h1>Inbox</h1>
+            </div>
+        </div>
+    </section>
+​
+    <section class="mailbox">
+        {% for thread in threads %}
+            <div class="card {% if thread|unread:user %}unread{% endif %}">
+              <div class="card-block">
+                <h4 class="card-title">from: {{ thread.users.all|join:", to " }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">{{ thread.subject }}</h6>
+                <p class="card-text">{{ thread.latest_message.content }}</p>
+                <a href="{{thread.get_absolute_url}}" class="card-link">View thread</a>
+              </div>
+            </div>
+        {% empty %}
+            <div>You have no messages.</div>
+        {% endfor %}
+    </section>
+{% endblock %}

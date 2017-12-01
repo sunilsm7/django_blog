@@ -78,7 +78,7 @@ class UserLoginAPIView(APIView):
 		if serializer.is_valid(raise_exception=True):
 			new_data = serializer.data
 			headers = {
-				'Authorization': 'Token ' + new_data['token'],
+				'Authorization': '{} {}'.format('Token', new_data['token']),
 			}
 			return Response(new_data, headers=headers, status=HTTP_200_OK)
 		return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

@@ -2,7 +2,7 @@
 
 {% load humanize %}
 
-{% block title %} {{ user }} Profile {% endblock %}
+{% block title %} {{ user }} Dashboard {% endblock %}
 
 {% block breadcrumb %}
 	<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -10,7 +10,8 @@
 {% endblock %}
 
 {% block content %}
-	{% if perms.isuperuser %}
+	<h1 class="text-muted">Dashboard</h1>
+	{% if perms.issuperuser %}
 		<ul>
 			<li><a href="{% url 'profiles:post-list' %}">Post list</a></li>
 			<li><a href="{% url 'users-api:user-list' %}">User list</a></li>
