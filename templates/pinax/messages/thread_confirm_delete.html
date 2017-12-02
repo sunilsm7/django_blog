@@ -8,7 +8,7 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i>Message Inbox</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}">Message Inbox</a></li>
     <li class="breadcrumb-item"><a href="{% url 'pinax_messages:thread_detail' thread.pk %}"><i class="fa fa-envelope"></i>Message thread</a></li>
     <li class="breadcrumb-item active">Message Delete</li>
 {% endblock %}

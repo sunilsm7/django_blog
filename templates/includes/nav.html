@@ -1,5 +1,7 @@
 {% load flatpages %}
 {% load post_extras %}
+{% load pinax_messages_tags %}
+
 {% get_flatpages as flatpages %}
 {% load account %}
 
@@ -37,8 +39,14 @@
               {{ user.username|title }}
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
-              <a class="dropdown-item" href="{% url 'profiles:dashboard' %}">Dashboard</a>
-              <a class="dropdown-item" href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i> Message Inbox</a>
+              <a class="dropdown-item" href="{% url 'profiles:dashboard' %}">Dashboard</a>      
+              {% with user|unread_thread_count as user_unread %}
+              <div class="{% if user_unread %}unread{% endif %}">
+                  <a href="{% url 'pinax_messages:inbox' %}" class="dropdown-item"><i class="fa fa-envelope"></i> Inbox
+                      {% if user_unread %}<span class="badge badge-default">{{ user_unread }}</span>{% endif %}
+                  </a>
+              </div>        
+              {% endwith %}
               {% if user|has_group:"Authors"%}
                 <a class="dropdown-item" href="{% url 'posts:new-post' %}">New Post</a>
               {% else %}

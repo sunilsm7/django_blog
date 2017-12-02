@@ -19,6 +19,7 @@
 	      <th>#</th>
 	      <th>Post title</th>
 	      <th>Published</th>
+	      <th>Author</th>
 	      <th>Approved</th>
 	      <th>Change</th>
 	    </tr>
@@ -30,6 +31,7 @@
 		      <th scope="row">{{forloop.counter }}</th>
 		      <td><a href="{% url 'posts:details' post.id %}">{{ post.title }}</a></td>
 		      <td>{{ post.publish }}</td>
+		      <td><a href="{% url 'users-api:user-detail' post.user.id %}">{{ post.user }}</a></td>
 		      <td class="post-approved">{{ post.approved }}</td>
 		      <td>
 		      	<form action="." method="PUT" class="form-post-status_update" data-post_approved_change_url="{% url 'profiles:post_approved_change' %}" data-post_update_url="{% url 'posts-api:post-status-update' post.id %}"> {% csrf_token %}

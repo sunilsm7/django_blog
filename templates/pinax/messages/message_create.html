@@ -3,7 +3,7 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i>Message Inbox</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'pinax_messages:inbox' %}">Message Inbox</a></li>
     <li class="breadcrumb-item active">New message</li>
 {% endblock %}
 
@@ -15,8 +15,9 @@
         <form class="comment-form" action="{% url "pinax_messages:message_create" %}" method="post">
             {% csrf_token %}
             {% include 'includes/form-snippet.html' %}
-            <button class="btn btn-primary pull-right">Send</button>
+            <button class="btn btn-primary">Send</button>
+             <a class="btn btn-secondary" href="{% url "pinax_messages:inbox" %}" role="button">Cancel</a>
         </form>
-        <a class="btn btn-default" href="{% url "pinax_messages:inbox" %}">Cancel</a>
+       
     </section>
 {% endblock %}

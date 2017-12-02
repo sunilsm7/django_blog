@@ -16,3 +16,5 @@ class SignUpForm(UserCreationForm):
 
 class WriteForUsForm(forms.Form):
 	message = forms.CharField(label='' ,widget = forms.Textarea(attrs={'placeholder':'what is in your mind ?',}))
+
+

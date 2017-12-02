@@ -16,6 +16,10 @@
 	color: #fff;
 }
 
+.message-unread{
+  background-color: #FBF8F8;
+}
+
 .new-post{
 	/*border: 1px solid grey;*/
 }

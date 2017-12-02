@@ -122,7 +122,6 @@ class PostListView(ListView):
 		return queryset
 
 
-
 def mail_to_user_template(template_name, user, email, subject, current_site): 
 	message = render_to_string(template_name, {
 		'user': user,
@@ -153,7 +152,8 @@ def add_remove_author(request):
 			template_name = 'accounts/email_snippets/author_approval_rejection_email.html'
 			subject = "Author Permission Removed"
 			email = user.email
-
+			content = "Your Author permission has been removed"
+			Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
 			mail_to_user_template(template_name, user, email, subject, current_site)
 			data = {
 				'username':username,
@@ -165,6 +165,8 @@ def add_remove_author(request):
 			template_name = 'accounts/email_snippets/author_approval_email.html'
 			subject = "Author Permission Granted"
 			email = user.email
+			content = "Congratulations, Author Permission Granted"
+			Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
 			mail_to_user_template(template_name, user, email, subject, current_site)
 			data = {
 				'username':username,
@@ -180,6 +182,7 @@ def write_for_us(request):
 		form = WriteForUsForm(request.POST)
 		if form.is_valid():
 			user = request.user
+			admin_user = User.objects.get(username='admin')
 			email = user.email
 			subject = 'Write for us'
 			user_message = form.cleaned_data['message']
@@ -190,16 +193,16 @@ def write_for_us(request):
 				'message' : user_message,
 				})
 			send_mail(subject, message, email, ['admin@example.com'])
+			
 			messages.success(request, 'Request Send Successfully!.')
+			content = "thank you for showing interest to write with us. we\'ll revert soon."
+			Message.new_message(from_user=admin_user, to_users=[user], subject=subject, content=content)
 			form = WriteForUsForm()
 			return render(request, 'accounts/write_for_us.html', context={'form':form})
 	else:
 		form = WriteForUsForm()
 	context['form'] = form
 	return render(request, 'accounts/write_for_us.html', context=context)
-
-
-
 
 
 @login_required
@@ -224,11 +227,15 @@ def post_approved_change(request):
 			'post' : post,
 			'domain':current_site,
 			})
-		content = ""
+		
 		send_mail(subject, message, 'admin@example.com', [email, ],)
-		Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
 
-		# mail_to_user_template(template_name, user, email, subject, current_site)
+		if approved_status == 'True':
+			content = "the post {title} has been approved.".format(title=post.title)
+			Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
+		else:
+			content = "the post {title} has not approved.".format(title=post.title)
+			Message.new_message(from_user=request.user, to_users=[user], subject=subject, content=content)
 		data = {
 			'post_id':post_id,
 			'approved':approved_status

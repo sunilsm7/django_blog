@@ -13,27 +13,57 @@
 {% endblock %}
 
 {% block content %}
+    {% with user|unread_thread_count as user_unread %}
+    <div class="{% if user_unread %}unread{% endif %} ">
+        <a href="{% url 'pinax_messages:inbox' %}"><i class="fa fa-envelope"></i> Unread messages
+            {% if user_unread %}<span class="badge badge-default">{{ user_unread }}</span>{% endif %}
+        </a>
+    </div>        
+    {% endwith %}
+
     <section class="actions-header">
         <div class="row">
             <div class="col-sm-12">
-                <a class="btn btn-success pull-right" href="{% url "pinax_messages:message_create" %}">New message</a>
-                <h1>Inbox</h1>
+                <a class="btn btn-success" href="{% url "pinax_messages:message_create" %}">New message</a>
             </div>
         </div>
     </section>
-​
+
+    <div class="mt-2">
+         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+             User List
+        </button>
+        <div class="collapse" id="collapseExample">
+            <ul class="list-group m-auto">
+                {% for user in message_user_list %}
+                 <li class="list-group-item"> <a href="{% url "pinax_messages:message_user_create" user_id=user.id %}" class="btn btn-default">{{ user }} Send Message</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     <section class="mailbox">
         {% for thread in threads %}
-            <div class="card {% if thread|unread:user %}unread{% endif %}">
+            <div class="card {% if thread|unread:user %}message-unread{% endif %}">
               <div class="card-block">
-                <h4 class="card-title">from: {{ thread.users.all|join:", to " }}</h4>
-                <h6 class="card-subtitle mb-2 text-muted">{{ thread.subject }}</h6>
-                <p class="card-text">{{ thread.latest_message.content }}</p>
-                <a href="{{thread.get_absolute_url}}" class="card-link">View thread</a>
+                <h4 class="card-title">from: <!-- {{ thread.users.all|join:", to " }} -->
+                    {{ thread.messages.first.sender }}
+                    {% if thread|unread:user %}
+                        <i class="fa fa-envelope"></i> 
+                    {% else %}
+                        <i class="fa fa-envelope-open"></i>
+                    {% endif %}
+                </h4>
+                <h6 class="card-subtitle mb-2 text-muted">{{ thread.subject }}. at -{{ thread.messages.first.sent_at }}</h6>
+                <p class="card-text">{{ thread.latest_message.content }}
+                    {{ thread.message. }}
+                </p>
+                <a href="{{thread.get_absolute_url}}" class="btn btn-info btn-sm" role="button">View thread</a>
               </div>
             </div>
         {% empty %}
             <div>You have no messages.</div>
         {% endfor %}
     </section>
+
+
 {% endblock %}
