@@ -14,21 +14,41 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '-#8j-y^)smx#cc8$i%(zy0ik4_3dzo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['rookie-blog.herokuapp.com',]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+	# our apps
+	'accounts',
+	'posts',
+
+	# built-in apps
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+	'django.contrib.sites',
+	'django.contrib.humanize',
+	'django.contrib.flatpages',
 
-	'posts',
+	# third party apps
+	'allauth',
+	'allauth.account',
+	'allauth.socialaccount',
+	'allauth.socialaccount.providers.google',
+	'allauth.socialaccount.providers.github',
+	'rest_framework',
+	'rest_framework.authtoken',
+	'markdown',
 	'widget_tweaks',
+	'django_filters',
+	'pinax.messages',
+	'pinax_theme_bootstrap',
+	'bootstrapform',
 ]
 
 MIDDLEWARE = [
