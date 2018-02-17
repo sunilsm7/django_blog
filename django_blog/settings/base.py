@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '-#8j-y^)smx#cc8$i%(zy0ik4_3dzoqoxkdvwgvp5)hi^g3q9+')
 
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -149,11 +149,7 @@ LOGOUT_REDIRECT_URL = 'account_login'
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    'static',
-]
+
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -187,9 +183,9 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%S.%fZ",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+    	'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         
     ),
 }

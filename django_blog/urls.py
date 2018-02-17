@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from posts.api import  views as api_views
 from posts import views as post_views
 from rest_framework.routers import DefaultRouter
+from rest_framework_jwt.views import obtain_jwt_token
 
 # Create a router and register our viewsets with it.
 # router = DefaultRouter()
@@ -33,6 +34,7 @@ urlpatterns = [
 	url(r'^accounts/', include('allauth.urls')),
 	url(r'^profiles/', include('accounts.urls', namespace='profiles')),
 	url(r'^posts/', include('posts.urls', namespace='posts')),
+	url(r'^api/auth/login/$', obtain_jwt_token, name='api-login'),
 	url(r"^messages/", include("pinax.messages.urls", namespace="pinax_messages")),
 	url(r'^api/$', api_views.api_root),
 	url(r'^api/posts/', include('posts.api.urls', namespace='posts-api')),
@@ -46,6 +48,3 @@ urlpatterns = [
 urlpatterns += [
 	url(r'^api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
-
-if settings.DEBUG:
-	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
