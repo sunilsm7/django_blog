@@ -1,9 +1,6 @@
 $(document).ready(function(){
 
-  console.log('app.js loaded');
-
   Notification.requestPermission().then(function(result) {
-    console.log(result);
   });
 
 
@@ -81,7 +78,6 @@ $(document).ready(function(){
       let $this_ = $(this);
       let $error_message = $this_.closest('div').find('.error-message');
       let urlEndPoint = $signUpForm.attr('data-url');
-      console.log(urlEndPoint);
 
       $.ajax({
           url :urlEndPoint,
@@ -99,7 +95,7 @@ $(document).ready(function(){
               
           },
           error:function(xhr,status,error){
-              console.log(error);
+              
           }
       });
     },
@@ -156,7 +152,6 @@ $(document).ready(function(){
             $error_message.show().html(data.email_error_message);
           },
           error:function(xhr,status,error){
-            console.log(error);
           }
         });
     },
@@ -214,15 +209,9 @@ $(document).ready(function(){
       data: $formData,
       success: function(data, textStatus, jqxhr){
           $error_message.text(data.message);
-          console.log(data.message);
-          console.log(textStatus);
-          console.log(jqxhr);
           document.querySelector(".contact-form").reset();
       },
       error: function(xhr, status, error){
-          console.log(xhr);
-          console.log(status);
-          console.log(error);
       },
     });
   });
@@ -256,7 +245,7 @@ $(document).ready(function(){
         });
 
         ajaxCall.fail(function(error){
-          console.log(err);
+          
         }); 
     },
   });
@@ -275,7 +264,6 @@ $(document).ready(function(){
     let urlEndPoint = $this_.attr('data-comment_post_url');
     let api_comment_create_url = $this_.attr('data-api_comment_create_url');
 
-    console.log(api_comment_create_url);
     let $error_message = $this_.find('.error-message');
 
     let ajaxCall = $.ajax({
@@ -304,17 +292,10 @@ $(document).ready(function(){
               </div>
           `;
       $post_comments.prepend(output);
-      console.log(data)
-      console.log(textStatus);
-      console.log(jqxhr);
       document.querySelector("#comment_form").reset();
     });
 
     ajaxCall.fail(function(jqXHR, textStatus, errorThrown){
-      // console.log(data);
-      console.log(jqXHR);
-      console.log(textStatus);
-      console.log(errorThrown);
     });
 
   });
@@ -400,9 +381,6 @@ $(document).ready(function(){
     });
 
     ajaxCall.fail(function(xhr, textStatus, error){
-      console.log(xhr);
-      console.log(textStatus);
-      console.log(error);
     });
       
   });
@@ -420,7 +398,6 @@ $(document).ready(function(){
     let $formData = $form.serialize();
 
     if($this_.prop("checked")){
-      console.log('checked ' + post_id);
       let ajaxCall = $.ajax({
         method: "POST",
         url:post_approved_change_url ,
@@ -430,19 +407,17 @@ $(document).ready(function(){
         },
       });
       ajaxCall.done(function(data, textStatus, jqxhr){
-        console.log(data);
+        
         // $td_approved.text(data.approved);
         $td_approved.text('True');
-        console.log(textStatus);
+        
       });
       ajaxCall.fail(function(xhr, textStatus, error){
-        console.log(error);
-        console.log(xhr);
-        console.log(textStatus);
+        
       });
     }
     else{
-      console.log('unchecked ' + post_id);
+      
       let ajaxCall = $.ajax({
         method: "POST",
         url:post_approved_change_url ,
@@ -455,13 +430,8 @@ $(document).ready(function(){
       ajaxCall.done(function(data, textStatus, jqxhr){
         // $td_approved.text(data.approved);
         $td_approved.text("False");
-        console.log(data);
-        console.log(textStatus);
       });
       ajaxCall.fail(function(xhr, textStatus, error){
-        console.log(xhr);
-        console.log(textStatus);
-        console.log(error);
       });
     }
   });
@@ -475,10 +445,8 @@ $(document).ready(function(){
     let $form = $this_.closest('.form-author-status_update');
     let $formData = $form.serialize();
     let author_add_remove_url = $form.attr('data-author_add_remove_url');
-    console.log(author_add_remove_url);
 
     if($this_.prop("checked")){
-      console.log('checked for: ' + user);
       $this_.prop("unchecked");
       
       let ajaxCall = $.ajax({
@@ -490,20 +458,13 @@ $(document).ready(function(){
         },
       });
       ajaxCall.done(function(data, textStatus, jqxhr){
-        console.log(data);
-        console.log(textStatus);
         $td_author.text("True");
       });
       ajaxCall.fail(function(xhr, textStatus, error){
-        console.log(xhr);
-        console.log(textStatus);
-        console.log(error);
       });
 
     }
     else{
-      console.log('unchecked for: ' + user);
-      
       let ajaxCall = $.ajax({
         method: "POST",
         url:author_add_remove_url ,
@@ -513,14 +474,9 @@ $(document).ready(function(){
         },
       });
       ajaxCall.done(function(data, textStatus, jqxhr){
-        console.log(data);
-        console.log(textStatus);
         $td_author.text("False");
       });
       ajaxCall.fail(function(xhr, textStatus, error){
-        console.log(xhr);
-        console.log(textStatus);
-        console.log(error);
       });
     }
   });
@@ -530,10 +486,8 @@ $(document).ready(function(){
   let $api_post_list_url = '/api/posts/';
   let $post_list = (api_post_list_url) => {
     let $post_container = $('#container_post_list');
-    console.log(api_post_list_url);
 
     $.getJSON(api_post_list_url, function(data) {   
-      console.log(data);
       let post_list = data.results;
       let items = []
 
