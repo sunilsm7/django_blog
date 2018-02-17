@@ -43,7 +43,7 @@ urlpatterns = [
 	url(r'^pages/', include('django.contrib.flatpages.urls', namespace='pages')),
 	url(r'^contact/$',post_views.ContactView.as_view() , name='contact'),
 	url(r'^admin/', admin.site.urls),
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [
 	url(r'^api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
