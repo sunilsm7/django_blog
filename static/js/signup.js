@@ -1,4 +1,4 @@
-console.log('signup.js loaded');
+
 let $sign_up_form = document.querySelector("#signUpForm");
 let $email_id = document.querySelector('#id_email');
 let $id_username = document.querySelector('#id_username');
