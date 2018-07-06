@@ -10,6 +10,7 @@ from django.utils.text import slugify
 from django.utils.html import mark_safe
 from markdown import markdown
 
+from posts.search import PostIndex
 from .managers import PostManager
 from .utils import unique_slug_generator
 # Create your models here.
@@ -48,6 +49,28 @@ class Post(models.Model):
 
 	def __str__(self):
 		return self.title
+
+	# Add indexing method to Post
+	def indexing(self):
+		obj = PostIndex(
+			meta={'id': self.id},
+			user=self.user.username,
+			title=self.title,
+			slug=self.slug,
+			content=self.content,
+			draft=self.draft,
+			image=self.image,
+			height_field=self.height_field,
+			width_field=self.width_field,
+			approved=self.approved,
+			publish=self.publish,
+			views=self.views,
+			updated=self.updated,
+			timestamp=self.timestamp
+		)
+
+		obj.save()
+		return obj_to_dict(include_meta=True)
 
 	def get_content_as_markdown(self):
 		return mark_safe(markdown(self.content, safe_mode='escape'))
@@ -96,15 +119,3 @@ class Comment(models.Model):
 
 	def has_replies(self):
 		return Comment.objects.filter(parent=self)
-
-
-def rl_pre_save_receiver(sender, instance, *args, **kwargs):
-
-	if not instance.slug:
-		instance.slug = unique_slug_generator(instance)
-
-pre_save.connect(rl_pre_save_receiver, sender=Post)
-	
-
-
-

@@ -10,6 +10,9 @@ __pycache__/
 #Database
 *.sqlite3
 
+# local settings
+local.py
+
 # ignore env
 .env
 
