@@ -12,9 +12,19 @@
 {% block content %}
 
 <div class="container">
-	<h2>{{ post.title }}</h2>
+	<h2>{{ post.title }}</h2> 
+	<h6 class="tex">
+		{% if user.is_authenticated and post.user == request.user %}
+  		<a class="btn btn-default" href="{% url 'posts:edit' post.id %}" role="button">Update <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+</a>
+  		<a class="btn btn-default" href="{% url 'posts:delete' post.id %}" role="button">Delete <i class="fa fa-times" aria-hidden="true"></i>
+</a>
+		{% endif %}
+	</h6>
+
 	<h6 class="text-muted" data-post_id="{{ post.id }}" id="post_title_id" data-api_post_comments_list_url="{% url 'posts-api:post-comment-list' post.id  %}" data-api_post_detail_url="{% url 'posts-api:post-detail' post.id %}">By: {{ post.user }}.</h6>
 	<h6 class="text-muted">Published on: {{ post.publish }}. Last Updated: {{ post.updated|naturaltime }}. Comments: <span id="post_comment_id">{{ post.comments.count }}</span>. View: {{ post.views }}. read time: {{ post.read_time }} min.</h6>
+
 	<p>{{ post.get_content_as_markdown }}</p>
 
 	<h3>Comments</h3>
