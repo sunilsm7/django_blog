@@ -11,6 +11,7 @@ django-widget-tweaks==1.4.1
 djangorestframework==3.7.3
 djangorestframework-jwt==1.11.0
 elasticsearch-dsl==6.2.1
+elasticsearch==6.3.0
 gunicorn==19.7.1
 idna==2.6
 Markdown==2.6.9
@@ -22,6 +23,7 @@ pinax-theme-bootstrap==8.0.1
 psycopg2==2.7.4
 psycopg2-binary==2.7.4
 PyJWT==1.5.3
+python-logstash==0.4.6
 python3-openid==3.1.0
 pytz==2018.3
 requests==2.18.4

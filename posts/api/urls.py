@@ -18,6 +18,8 @@ urlpatterns = [
 	url(r'^comments/(?P<pk>[0-9]+)/update/$', views.CommentUpdateAPIView.as_view(), name='comment-update'),
 	url(r'^comments/(?P<pk>[0-9]+)/delete/$', views.CommentDeleteAPIView.as_view(), name='comment-delete'),
 	# url(r'^comments/(?P<pk>[0-9]+)/reply/$', views.CommentRepliesListAPIView.as_view(), name='comment-reply'),
+	url(r'^search/$', views.search_posts, name='search'),
+    url(r'^list/$', views.post_list, name='list'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
