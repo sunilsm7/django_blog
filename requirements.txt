@@ -22,7 +22,7 @@ pinax-messages==2.0.2
 pinax-theme-bootstrap==8.0.1
 psycopg2==2.7.4
 psycopg2-binary==2.7.4
-PyJWT==1.5.3
+PyJWT==2.4.0
 python-logstash==0.4.6
 python3-openid==3.1.0
 pytz==2018.3
